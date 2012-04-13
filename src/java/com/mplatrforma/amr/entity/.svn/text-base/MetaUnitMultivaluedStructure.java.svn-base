@@ -1,0 +1,245 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.mplatrforma.amr.entity;
+
+import com.mresearch.databank.shared.MetaUnitDTO;
+import com.mresearch.databank.shared.MetaUnitDateDTO;
+import com.mresearch.databank.shared.MetaUnitDoubleDTO;
+import com.mresearch.databank.shared.MetaUnitIntegerDTO;
+import com.mresearch.databank.shared.MetaUnitMultivaluedDTO;
+import com.mresearch.databank.shared.MetaUnitStringDTO;
+import java.io.Serializable;
+import java.util.ArrayList;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+/**
+ *
+ * @author reshet
+ */
+//@Entity
+//public class MetaUnitMultivalued<MetaEntityType> extends MetaUnit implements Serializable {
+public class MetaUnitMultivalued extends MetaUnit implements Serializable {
+    private static final long serialVersionUID = 1L;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
+//    
+    private long isCatalogizable = 0;
+    private long isSplittingEnabled = 1;
+    private long array_view = 0;
+    @OneToMany(cascade= CascadeType.PERSIST)
+    private ArrayList<MetaUnit> sub_meta_units;
+   // private ArrayList<MetaEntityType> tagged_entities;
+    //@OneToMany
+    private ArrayList<Long> tagged_entities;
+    
+    public MetaUnitMultivalued() {
+    }
+    public MetaUnitMultivalued(String desc,String unique_name) {
+        super(unique_name, desc);
+        sub_meta_units = new ArrayList<MetaUnit>();
+        tagged_entities = new ArrayList<Long>();
+    }
+    public MetaUnitMultivalued(String desc,ArrayList<MetaUnit> sub_meta) {
+        super.setDescription(desc);
+        this.sub_meta_units = sub_meta;
+    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int hash = 0;
+//        hash += (id != null ? id.hashCode() : 0);
+//        return hash;
+//    }
+//
+//    @Override
+//    public boolean equals(Object object) {
+//        // TODO: Warning - this method won't work in the case the id fields are not set
+//        if (!(object instanceof MetaUnitMultivalued)) {
+//            return false;
+//        }
+//        MetaUnitMultivalued other = (MetaUnitMultivalued) object;
+//        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "com.mplatrforma.amr.entity.MetaUnitMultivalued[ id=" + id + " ]";
+//    }
+
+
+
+    /**
+     * @return the sub_meta_units
+     */
+    public ArrayList<MetaUnit> getSub_meta_units() {
+        return sub_meta_units;
+    }
+
+    /**
+     * @param sub_meta_units the sub_meta_units to set
+     */
+    public void setSub_meta_units(ArrayList<MetaUnit> sub_meta_units) {
+        this.sub_meta_units = sub_meta_units;
+    }
+
+    /**
+     * @return the tagged_entities
+     */
+    //public ArrayList<MetaEntityType> getTagged_entities() {
+    public ArrayList<Long> getTagged_entities() {
+        return tagged_entities;
+    }
+
+    /**
+     * @param tagged_entities the tagged_entities to set
+     */
+    
+    //public void setTagged_entities(ArrayList<MetaEntityType> tagged_entities) {
+    public void setTagged_entities(ArrayList<Long> tagged_entities) {
+        this.tagged_entities = tagged_entities;
+    }
+
+    /**
+     * @return the isCatalogizable
+     */
+    public long getIsCatalogizable() {
+        return isCatalogizable;
+    }
+
+    /**
+     * @param isCatalogizable the isCatalogizable to set
+     */
+    public void setIsCatalogizable(long isCatalogizable) {
+        this.isCatalogizable = isCatalogizable;
+    }
+
+    @Override
+    public MetaUnitDTO toDTO() {
+        MetaUnitMultivaluedDTO dto = new MetaUnitMultivaluedDTO(super.getId(),super.getDescription(),super.getUnique_name());
+        dto.setIsCatalogizable(isCatalogizable!=0);
+        dto.setIsSplittingEnabled(isSplittingEnabled!=0);
+        dto.setArrayView(array_view!=0);
+        dto.setTagged_entities(tagged_entities);
+        ArrayList<MetaUnitDTO> sub_meta_units_dtos = new ArrayList<MetaUnitDTO>();
+        for(MetaUnit unit:this.sub_meta_units)
+        {
+            if(unit instanceof MetaUnitMultivalued)
+            {
+                MetaUnitDTO dt;
+                //DONE FOR SPLIITING DOWNLOAD OF DEEP TREE
+                if(((MetaUnitMultivalued)unit).getIsSplittingEnabled()!=0)
+                {
+                    dt = new MetaUnitMultivaluedDTO(super.getId(),super.getDescription(),super.getUnique_name());
+                    ((MetaUnitMultivaluedDTO)dt).setIsCatalogizable(((MetaUnitMultivalued)unit).getIsCatalogizable()!=0);
+                    ((MetaUnitMultivaluedDTO)dt).setIsSplittingEnabled(((MetaUnitMultivalued)unit).getIsSplittingEnabled()!=0);
+                    ((MetaUnitMultivaluedDTO)dt).setArrayView(((MetaUnitMultivalued)unit).getArray_view()!=0);
+                }
+                else
+                {
+                    dt = unit.toDTO();
+                }
+                sub_meta_units_dtos.add(dt);
+            }else
+            {
+                sub_meta_units_dtos.add(unit.toDTO());
+            }
+        }
+        dto.setSub_meta_units(sub_meta_units_dtos);
+        return dto;
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the isSplittingEnabled
+     */
+    public long getIsSplittingEnabled() {
+        return isSplittingEnabled;
+    }
+
+    /**
+     * @param isSplittingEnabled the isSplittingEnabled to set
+     */
+    public void setIsSplittingEnabled(long isSplittingEnabled) {
+        this.isSplittingEnabled = isSplittingEnabled;
+    }
+
+    /**
+     * @return the array_view
+     */
+    public long getArray_view() {
+        return array_view;
+    }
+
+    /**
+     * @param array_view the array_view to set
+     */
+    public void setArray_view(long array_view) {
+        this.array_view = array_view;
+    }
+
+    @Override
+    protected void doUpdateFromDTO(MetaUnitDTO dto) {
+        if(dto instanceof MetaUnitMultivaluedDTO)
+        {
+            MetaUnitMultivaluedDTO m_dto = (MetaUnitMultivaluedDTO)dto;
+            this.array_view = m_dto.isArrayView()?1:0;
+            this.isCatalogizable = m_dto.isIsCatalogizable()?1:0;
+            this.isSplittingEnabled = m_dto.isIsSplittingEnabled()?1:0;
+            this.tagged_entities = m_dto.getTagged_entities();
+            for(MetaUnitDTO dt:m_dto.getSub_meta_units())
+            {
+                if(sub_meta_units_contains(dt.getId()))
+                {
+                    MetaUnit m_unit = sub_meta_units_get(dt.getId());
+                    m_unit.updateFromDTO(dt);
+                }else
+                {
+                    MetaUnit new_unit = null;
+                    if(dt instanceof MetaUnitDateDTO){new_unit = new MetaUnitDate();new_unit.updateFromDTO(dt);};
+                    if(dt instanceof MetaUnitDoubleDTO){new_unit = new MetaUnitDouble();new_unit.updateFromDTO(dt);};
+                    if(dt instanceof MetaUnitIntegerDTO){new_unit = new MetaUnitInteger();new_unit.updateFromDTO(dt);};
+                    if(dt instanceof MetaUnitStringDTO){new_unit = new MetaUnitString();new_unit.updateFromDTO(dt);};
+                    if(dt instanceof MetaUnitMultivaluedDTO){new_unit = new MetaUnitMultivalued();new_unit.updateFromDTO(dt);};
+                    sub_meta_units.add(new_unit);
+                }
+            }
+        }
+    }
+    private boolean sub_meta_units_contains(Long id)
+    {
+        if(id != null)
+        for(MetaUnit unit:sub_meta_units)
+        {
+            if(unit.getId()==id)return true;
+        }
+        return false;
+    }
+    private MetaUnit sub_meta_units_get(Long id)
+    {
+        if(id != null)
+        for(MetaUnit unit:sub_meta_units)
+        {
+            if(unit.getId()==id)return unit;
+        }
+        return null;
+    }
+    
+}

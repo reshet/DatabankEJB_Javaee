@@ -1,0 +1,118 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.mplatforma.amr.service;
+
+import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
+import com.mplatrforma.amr.entity.DatabankStructure;
+import com.mplatrforma.amr.entity.MetaUnit;
+import com.mplatrforma.amr.entity.MetaUnitDate;
+import com.mplatrforma.amr.entity.MetaUnitInteger;
+import com.mplatrforma.amr.entity.MetaUnitMultivalued;
+import com.mplatrforma.amr.entity.MetaUnitString;
+import com.mplatrforma.amr.entity.UserAccount;
+import com.mresearch.databank.shared.UserAccountDTO;
+import java.util.ArrayList;
+import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
+import javax.jws.WebService;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+/**
+ *
+ * @author reshet
+ */
+@WebService
+@Stateless(mappedName="UserAccountRemoteBean",name="UserAccountRemoteBean")
+public class UserAccountSessionBean implements UserAccountBeanRemote{
+
+    @PersistenceContext
+    private EntityManager em;
+    
+    @Override
+    public UserAccountDTO getUserAccount(String email, String password) {
+       // createDefaultDatabankStructure();
+        initDefaults();
+        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
+    }
+     private void createDefaultDatabankStructure()
+      {
+          //DatabankStructure<SocioResearch> db = new DatabankStructure<SocioResearch>("socioresearch");
+          //MetaUnitMultivalued<SocioResearch> root = new MetaUnitMultivalued<SocioResearch>("Socioresearch Metadata Structure");
+          
+          DatabankStructure db = new DatabankStructure("socioresearch");
+         
+          MetaUnitMultivalued root = new MetaUnitMultivalued("Socioresearch Metadata Structure","socioresearch_root");
+          
+          ArrayList<MetaUnit> arr = new ArrayList<MetaUnit>();
+          
+          arr.add(new MetaUnitString("Название исследования","name"));
+          
+          //MetaUnitMultivalued<SocioResearch> dates = new MetaUnitMultivalued<SocioResearch>("Даты исследования");
+          MetaUnitMultivalued dates = new MetaUnitMultivalued("Даты исследования","dates");
+          ArrayList<MetaUnit> arr_d = new ArrayList<MetaUnit>();
+          arr_d.add(new MetaUnitDate("Дата начала полевого этапа","start_date"));
+          arr_d.add(new MetaUnitDate("Дата конца полевого этапа","end_date"));
+          dates.setSub_meta_units(arr_d);
+          arr.add(dates);
+          
+          //MetaUnitMultivalued<SocioResearch> gen_geath = new MetaUnitMultivalued<SocioResearch>("Генеральная совокупность");          
+          MetaUnitMultivalued gen_geath = new MetaUnitMultivalued("Генеральная совокупность","gen_geath");          
+          arr.add(gen_geath);
+          
+          arr.add(new MetaUnitInteger("Объем выборки","sel_size"));
+          
+          //MetaUnitMultivalued<SocioResearch> selection = new MetaUnitMultivalued<SocioResearch>("Способ генерации выборки");          
+          MetaUnitMultivalued selection = new MetaUnitMultivalued("Способ генерации выборки","generation_type");          
+          ArrayList<MetaUnit> selection_variants = new ArrayList<MetaUnit>();
+          selection.setSub_meta_units(selection_variants);
+          ArrayList<MetaUnit> selection_randomity = new ArrayList<MetaUnit>();
+          ArrayList<MetaUnit> selection_levels = new ArrayList<MetaUnit>();
+          selection_variants.add(new MetaUnitMultivalued("случайность", selection_randomity));
+          selection_variants.add(new MetaUnitMultivalued("ступенчастость", selection_levels));
+          selection_levels.add(new MetaUnitMultivalued("одноступенчатая","level_single"));
+          selection_levels.add(new MetaUnitMultivalued("многоступенчатая","level_multi"));
+          selection_randomity.add(new MetaUnitMultivalued("случайная","random"));
+          selection_randomity.add(new MetaUnitMultivalued("неслучайная","not-random"));
+          arr.add(selection);
+          
+          //MetaUnitMultivalued<SocioResearch> researchers = new MetaUnitMultivalued<SocioResearch>("Исследователи, связанные с проектом");          
+          MetaUnitMultivalued researchers = new MetaUnitMultivalued("Исследователи, связанные с проектом","researchers");          
+          ArrayList<MetaUnit> arr_r = new ArrayList<MetaUnit>();
+          researchers.setSub_meta_units(arr_r);
+          
+          root.setSub_meta_units(arr);
+          db.setRoot(root);
+          em.persist(db);
+          
+          int b = 2;
+      }
+
+    @Override
+    public UserAccountDTO updateAccountResearchState(UserAccountDTO dto) {
+        UserAccount account;
+        UserAccountDTO returnBack = dto;
+        account = em.find(UserAccount.class,dto.getId());
+        if (account != null)
+        {
+                account.updateAccountResearchState(dto);
+                returnBack = UserAccount.toDTO(account);
+        }
+        return returnBack;
+    }
+
+    @Override
+    public void initDefaults() {
+        new UserAccount(em).createDefaults();
+    }
+
+    @Override
+    public UserAccountDTO getDefaultUser() {
+        return UserAccount.toDTO(new UserAccount(em).getDefaultUser());
+    }
+    
+}
