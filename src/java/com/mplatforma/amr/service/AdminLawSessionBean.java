@@ -7,6 +7,7 @@ package com.mplatforma.amr.service;
 import com.mplatforma.amr.service.remote.AdminLawBeanRemote;
 import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
 import com.mplatrforma.amr.entity.Article;
+import com.mplatrforma.amr.entity.SocioResearch;
 import com.mplatrforma.amr.entity.Var;
 import com.mplatrforma.amr.entity.Zacon;
 import com.mresearch.databank.jobs.IndexLawJobFast;
@@ -26,6 +27,7 @@ import javax.jws.WebService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -99,8 +101,7 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
     public ArrayList<ArticleDTO> getArticlesAll() {
 	ArrayList<ArticleDTO> list = new ArrayList<ArticleDTO>();
 	try {
-            
-            Query q = em.createQuery("select * from Article");
+            TypedQuery<Article> q = em.createQuery("select x from Article x",Article.class);
             List<Article> res = (List<Article>)q.getResultList();
 		for(Article art:res)
 		{
@@ -238,7 +239,7 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
 	ArrayList<ZaconDTO_Light> list = new ArrayList<ZaconDTO_Light>();
    // SocioResearch dsResearch, detached;
 	try {
-            Query q = em.createQuery("select * from Zacon");
+            TypedQuery<Zacon> q = em.createQuery("select x from Zacon x",Zacon.class);
 		List<Zacon> res = (List<Zacon>)q.getResultList();
 		for(Zacon art:res)
 		{

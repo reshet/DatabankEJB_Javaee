@@ -42,12 +42,12 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
    
     @Override
     public UserAccountDTO getUserAccount(String email, String password) {
-       //createDefaultDatabankStructure();
-       //initDefaults();
+     //  createDefaultDatabankStructure();
+     //  initDefaults();
        //return new UserAccountDTO(email,email, password);
-       //createDefaultDatabankVarStructure();
-       // createDefaultDatabankVarStructure();
-       // createDefaultDatabankLawStructure();
+     //  createDefaultDatabankVarStructure();
+      //  createDefaultDatabankVarStructure();
+      // createDefaultDatabankLawStructure();
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
     }       
      private void createDefaultDatabankStructure()
@@ -178,9 +178,9 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
           ArrayList<MetaUnit> arr = new ArrayList<MetaUnit>();
           
           arr.add(new MetaUnitString("name","Название переменной"));
-          arr.add(new MetaUnitString("code","Код переменной"));
+          //arr.add(new MetaUnitString("code","Код переменной"));
           
-          arr.add(new MetaUnitString("alt_codes","Коды альтернатив"));
+          //arr.add(new MetaUnitString("alt_codes","Коды альтернатив"));
           arr.add(new MetaUnitString("alt_values","Тексты альтернатив"));
           
 //          MetaUnitMultivaluedStructure alternatives = new MetaUnitMultivaluedStructure("alt","Даты исследования");

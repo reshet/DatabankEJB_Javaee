@@ -16,6 +16,7 @@ import com.mresearch.databank.shared.OrgDTO;
 import com.mresearch.databank.shared.ResearchFilesDTO;
 import com.mresearch.databank.shared.SSE_DTO;
 import com.mresearch.databank.shared.SocioResearchDTO;
+import com.mresearch.databank.shared.SocioResearchDTO_Light;
 import com.mresearch.databank.shared.SocioResearchFilesDTO;
 import com.mresearch.databank.shared.UserAccountDTO;
 import com.mresearch.databank.shared.VarDTO;
@@ -76,22 +77,26 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
 
     
     @Override
-    public ArrayList<SocioResearchDTO> getResearchSummaries() {
-        ArrayList<SocioResearchDTO> list = new ArrayList<SocioResearchDTO>();
+    public ArrayList<SocioResearchDTO_Light> getResearchSummaries() {
+   //     ArrayList<SocioResearchDTO_Light> list = new ArrayList<SocioResearchDTO_Light>();
         
    // SocioResearch dsResearch, detached;
-	try {
-		TypedQuery<SocioResearch> q = em.createQuery("SELECT x FROM SocioResearch x", SocioResearch.class);
-		List<SocioResearch> res = (List<SocioResearch>)q.getResultList();
-		for(SocioResearch research:res)
-		{
-			list.add(research.toLightDTO());
-		}
-	} finally {
-        }
-        return list;
+//	try {
+//		TypedQuery<SocioResearch> q = em.createQuery("SELECT x FROM SocioResearch x", SocioResearch.class);
+//		List<SocioResearch> res = (List<SocioResearch>)q.getResultList();
+//		for(SocioResearch research:res)
+//		{
+//			list.add(research.toLightDTO());
+//		}
+//	} finally {
+//        }
+        
+        
+        return SocioResearch.getResearchsLight(em);
    //     throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    
     
     public static ArrayList<Long> intersection(ArrayList<Long> first,ArrayList<Long> second)
     {
@@ -171,24 +176,24 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     }    
     
     @Override
-    public ArrayList<SocioResearchDTO> getResearchSummaries(List<FilterBaseDTO> filters) {
-        ArrayList<SocioResearchDTO> list = new ArrayList<SocioResearchDTO>();
-	ArrayList<Long> all_ids = new ArrayList<Long>();
-	ArrayList<SocioResearchDTO> all_dtos = getResearchSummaries();
-	for(SocioResearchDTO dto: all_dtos)
-	{
-		all_ids.add(dto.getId());
-	}
-	try {
-            for(FilterBaseDTO dto:filters)
-            {
-                    all_ids = getSubFiltered(all_ids, dto);
-            }
-            list = getResearchDTOs(all_ids);
-	} finally {
-        }
-	return list;        
-       // throw new UnsupportedOperationException("Not supported yet.");
+    public ArrayList<SocioResearchDTO_Light> getResearchSummaries(List<FilterBaseDTO> filters) {
+//        ArrayList<SocioResearchDTO_Light> list = new ArrayList<SocioResearchDTO_Light>();
+////	ArrayList<Long> all_ids = new ArrayList<Long>();
+////	ArrayList<SocioResearchDTO_Light> all_dtos = getResearchSummaries();
+////	for(SocioResearchDTO_Light dto: all_dtos)
+////	{
+////		all_ids.add(dto.getId());
+////	}
+////	try {
+////            for(FilterBaseDTO dto:filters)
+////            {
+////                    all_ids = getSubFiltered(all_ids, dto);
+////            }
+////            list = getResearchDTOs(all_ids);
+////	} finally {
+////        }
+//	return list;        
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -286,26 +291,28 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     }
 
     @Override
-    public ArrayList<SocioResearchDTO> getResearchDTOs(ArrayList<Long> ids) {
-       ArrayList<SocioResearchDTO> arr = new ArrayList<SocioResearchDTO>();
-	if (ids != null)
-		for(Long key:ids)
-		{
-			SocioResearchDTO dto = getResearch(key);
-			arr.add(dto);
-		}
-	return arr;
+    public ArrayList<SocioResearchDTO_Light> getResearchDTOs(ArrayList<Long> ids) {
+//       ArrayList<SocioResearchDTO> arr = new ArrayList<SocioResearchDTO>();
+//	if (ids != null)
+//		for(Long key:ids)
+//		{
+//			SocioResearchDTO dto = getResearch(key);
+//			arr.add(dto);
+//		}
+       
+       
+	return SocioResearch.getResearchsLightDTOs(em, ids);
     }
      @Override
     public ArrayList<VarDTO_Light> getVarDTOs(ArrayList<Long> ids) {
-       ArrayList<VarDTO_Light> arr = new ArrayList<VarDTO_Light>();
-	if (ids != null)
-		for(Long key:ids)
-		{
-			VarDTO_Light dto = getVarLight(key);
-			arr.add(dto);
-		}
-	return arr;
+//       ArrayList<VarDTO_Light> arr = new ArrayList<VarDTO_Light>();
+//	if (ids != null)
+//		for(Long key:ids)
+//		{
+//			VarDTO_Light dto = getVarLight(key);
+//			arr.add(dto);
+//		}
+	return Var.getResearchVarsLightDTOs(em, ids);
     }
     
     private Node node;

@@ -1,23 +1,17 @@
 package com.mplatrforma.amr.entity;
 
+import com.mresearch.databank.shared.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.mresearch.databank.shared.ResearchFilesDTO;
-import com.mresearch.databank.shared.SocioResearchDTO;
-import com.mresearch.databank.shared.VarDTO;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
+import java.util.List;
+import javax.persistence.*;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "SocioResearch.getResearchesLight", query = "SELECT NEW com.mresearch.databank.shared.SocioResearchDTO_Light(x.id, x.name) FROM SocioResearch x ORDER BY x.id"),
+    @NamedQuery(name = "SocioResearch.getResearchesLightIN", query = "SELECT NEW com.mresearch.databank.shared.SocioResearchDTO_Light(x.id, x.name) FROM SocioResearch x WHERE x.id IN :idlist ORDER BY x.id")
+})
 public class SocioResearch extends AbstractSearchable{
 
     
@@ -28,9 +22,9 @@ public class SocioResearch extends AbstractSearchable{
         @GeneratedValue(strategy= GenerationType.AUTO)
 	private long id;
 	private long id_search_repres;
-	private short vars_tagcloud_created;
+	//private short vars_tagcloud_created;
 	private String name;
-	private String org_prompter;
+	//private String org_prompter;
 
     public SocioResearch() {
     }
@@ -39,26 +33,24 @@ public class SocioResearch extends AbstractSearchable{
 	}
 	private Long spssFile_blobkey;
 	private Long file_accessor_id;
-	private byte[] ddi3_physical;
-	private byte[] ddi3_logical;
 	private ArrayList<Long> var_ids;
-	private ArrayList<String> case_ids;
-	private Long org_order_id;
-	private Long org_impl_id;
-	private String org_order_name;
-	private String org_impl_name;
+//	private ArrayList<String> case_ids;
+//	private Long org_order_id;
+//	private Long org_impl_id;
+//	private String org_order_name;
+//	private String org_impl_name;
 	private long var_weight_id;
 	private String var_weight_name;
 	private int selection_size;
-	private String gen_geathering;
-	private String method;
-	private String selection_appr_rand;
-	private String selection_appr_complexity;
-	private ArrayList<String> publications;
-	private ArrayList<String> publications_dois;
-	private ArrayList<String> publications_urls;
-	private ArrayList<String> researchers;
-	private ArrayList<String> concepts;
+//	private String gen_geathering;
+//	private String method;
+//	private String selection_appr_rand;
+//	private String selection_appr_complexity;
+//	private ArrayList<String> publications;
+//	private ArrayList<String> publications_dois;
+//	private ArrayList<String> publications_urls;
+//	private ArrayList<String> researchers;
+//	private ArrayList<String> concepts;
         public static String SEL_SIZE_NAME = "socioresearch_sel_size";
         public static String _NAME = "socioresearch_name";
         private String json_desctiptor;
@@ -106,41 +98,20 @@ public class SocioResearch extends AbstractSearchable{
 	}
 	
 
-	private void setCase_ids(ArrayList<String> case_ids) {
-		this.case_ids = case_ids;
-	}
-	public ArrayList<String> getCase_ids() {
-		return case_ids;
-	}
+	
 	//public double getWeightedSize()
 	public SocioResearch(SocioResearchDTO rDTO,EntityManager em)
 	{
                 this.em = em;
 		//createFileAccessor();
-		vars_tagcloud_created = 0;
+		//vars_tagcloud_created = 0;
 		this.setId_search_repres(createSearchRepresenter());
 		this.setName(rDTO.getName());
-		this.setOrg_impl_id(rDTO.getOrg_impl_id());
-		this.setOrg_order_id(rDTO.getOrg_order_id());
-		this.setOrg_impl_name(rDTO.getOrg_impl_name());
-		this.setOrg_order_name(rDTO.getOrg_order_name());
-		this.setStart_date(rDTO.getStart_date());
-		this.setEnd_date(rDTO.getEnd_date());
-		this.setGen_geathering(rDTO.getGen_geathering());
 		this.setSelection_size(rDTO.getSelection_size());
-		this.setSelection_appr_rand(rDTO.getSel_randomity());
-		this.setSelection_appr_complexity(rDTO.getSel_complexity());
 		this.setVar_ids(rDTO.getVar_ids());
-		this.setPublications(rDTO.getPublications());
-		this.setPublications_dois(rDTO.getPublications_dois());
-		this.setPublications_urls(rDTO.getPublications_urls());
-		this.setResearchers(rDTO.getResearchers());
-		this.setMethod(rDTO.getMethod());
 		this.setVar_weight_id(rDTO.getVar_weight_id());
 		this.setVar_weight_name(rDTO.getVar_weight_name());
-		this.setConcepts(rDTO.getConcepts());
-                this.setJson_desctiptor(rDTO.getJson_desctiptor());
-                this.entity_item = new MetaUnitEntityItem(rDTO.getName());
+	        this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
                // this.entity_item.getMapped_values().put(SocioResearch.SEL_SIZE_NAME, String.valueof(rDTO.se));
 		//updateEntityRepresent(id_search_repres, name,em);
@@ -190,7 +161,7 @@ public class SocioResearch extends AbstractSearchable{
 //	   	        	i++;
 //		   	    }
 			}  
-	    	vars_tagcloud_created = 1;
+	    //	vars_tagcloud_created = 1;
 	    } finally {
 	     // em.close();
 	    }
@@ -200,40 +171,39 @@ public class SocioResearch extends AbstractSearchable{
                // em = new RxStorageSessionBean().getEM();
                 this.em = em;
                 this.entity_item = new MetaUnitEntityItem();
-                vars_tagcloud_created = 0;
+           //     vars_tagcloud_created = 0;
 		createFileAccessor();
 	//this.setId_search_repres(createSearchRepresenter());
 	}
-
+        
+         public static ArrayList<SocioResearchDTO_Light> getResearchsLight(EntityManager em)
+        {
+           
+            TypedQuery<SocioResearchDTO_Light> q = em.createNamedQuery("SocioResearch.getResearchesLight", SocioResearchDTO_Light.class );
+            List<SocioResearchDTO_Light> l = q.getResultList();
+            return new ArrayList<SocioResearchDTO_Light>(l);
+        }
+        public static ArrayList<SocioResearchDTO_Light> getResearchsLightDTOs(EntityManager em, ArrayList<Long> ids)
+        {
+           
+            TypedQuery<SocioResearchDTO_Light> q = em.createNamedQuery("SocioResearch.getResearchesLightIN", SocioResearchDTO_Light.class );
+            q.setParameter("idlist", ids);
+            List<SocioResearchDTO_Light> l = q.getResultList();
+            return new ArrayList<SocioResearchDTO_Light>(l);
+        }
 	public SocioResearchDTO toDTO()
 	{
 		SocioResearchDTO  dto = new SocioResearchDTO();
 		dto.setId(id);
 		dto.setName(getName());
-		dto.setOrg_impl_id(getOrg_impl_id());
-		dto.setOrg_order_id(getOrg_order_id());
-		dto.setStart_date(getStart_date());
-		dto.setEnd_date(getEnd_date());
-		dto.setGen_geathering(getGen_geathering());
 		dto.setSelection_size(getSelection_size());
 		//dto.setSelection_appr(getSelection_appr());
-		dto.setSel_complexity(this.selection_appr_complexity);
-		dto.setSel_randomity(this.selection_appr_rand);
 		dto.setVar_ids(getVar_ids());
-		dto.setPublications(getPublications());
-		dto.setPublications_dois(getPublications_dois());
-		dto.setPublications_urls(getPublications_urls());
 		//this.setPublications_urls(rDTO.getPublications_urls());
 		
-		dto.setResearchers(getResearchers());
-		dto.setMethod(getMethod());
 		dto.setVar_weight_id(getVar_weight_id());
-		dto.setConcepts(getConcepts());
-		dto.setOrg_impl_name(getOrg_impl_name());
-		dto.setOrg_order_name(getOrg_order_name());
 		dto.setVar_weight_name(getVar_weight_name());
 		dto.setFile_accessor_id(this.file_accessor_id);
-                dto.setJson_desctiptor(json_desctiptor);
                 if(this.entity_item!=null && this.entity_item.getMapped_values()!=null)
                         dto.setFilling(this.entity_item.getMapped_values());
                 
@@ -264,28 +234,14 @@ public class SocioResearch extends AbstractSearchable{
 		if (id_search_repres == 0) id_search_repres = createSearchRepresenter();
 		if (getSearchRepresenter(id_search_repres,em).getEntity_id() == 0) updateEntityID(id, id_search_repres,em);
 		this.setName(rDTO.getName());
-		this.setOrg_impl_id(rDTO.getOrg_impl_id());
-		this.setOrg_order_id(rDTO.getOrg_order_id());
-		this.setOrg_impl_name(rDTO.getOrg_impl_name());
-		this.setOrg_order_name(rDTO.getOrg_order_name());
 		this.setStart_date(rDTO.getStart_date());
 		this.setEnd_date(rDTO.getEnd_date());
-		this.setGen_geathering(rDTO.getGen_geathering());
 		this.setSelection_size(rDTO.getSelection_size());
-		this.setSelection_appr_rand(rDTO.getSel_randomity());
-		this.setSelection_appr_complexity(rDTO.getSel_complexity());
 		//this.var_ids = rDTO.getVar_ids();
-		this.setPublications(rDTO.getPublications());
-		this.setPublications_dois(rDTO.getPublications_dois());
-		this.setPublications_urls(rDTO.getPublications_urls());
 		
-		this.setResearchers(rDTO.getResearchers());
-		this.setMethod(rDTO.getMethod());
 		this.setVar_weight_id(rDTO.getVar_weight_id());
 		this.setVar_weight_name(rDTO.getVar_weight_name());
-		this.setConcepts(rDTO.getConcepts());
-                this.setJson_desctiptor(rDTO.getJson_desctiptor());
-                if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
+		if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
 		//updateEntityRepresent(id_search_repres, name,em);
 		//if (vars_tagcloud_created==0)generateVarsTagCloud();
@@ -298,29 +254,15 @@ public class SocioResearch extends AbstractSearchable{
 		if (id_search_repres == 0) id_search_repres = createSearchRepresenter();
 		if (getSearchRepresenter(id_search_repres,em).getEntity_id() == 0) updateEntityID(id, id_search_repres,em);
 		//this.setName(rDTO.getName());
-		this.setOrg_impl_id(rDTO.getOrg_impl_id());
-		this.setOrg_order_id(rDTO.getOrg_order_id());
-		this.setOrg_impl_name(rDTO.getOrg_impl_name());
-		this.setOrg_order_name(rDTO.getOrg_order_name());
 		this.setStart_date(rDTO.getStart_date());
 		this.setEnd_date(rDTO.getEnd_date());
-		this.setGen_geathering(rDTO.getGen_geathering());
 		this.setSelection_size(rDTO.getSelection_size());
-		this.setSelection_appr_rand(rDTO.getSel_randomity());
-		this.setSelection_appr_complexity(rDTO.getSel_complexity());
 		//this.var_ids = rDTO.getVar_ids();
-		this.setPublications(rDTO.getPublications());
-		this.setPublications_dois(rDTO.getPublications_dois());
-		this.setPublications_urls(rDTO.getPublications_urls());
 		
-		this.setResearchers(rDTO.getResearchers());
-		this.setMethod(rDTO.getMethod());
 		
 		//this.setVar_weight_id(rDTO.getVar_weight_id());
 		//this.setVar_weight_name(rDTO.getVar_weight_name());
-		this.setConcepts(rDTO.getConcepts());
-                this.setJson_desctiptor(rDTO.getJson_desctiptor());
-                if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
+		if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
 		//updateEntityRepresent(id_search_repres, name);
 		//if (vars_tagcloud_created==0)generateVarsTagCloud();
@@ -351,37 +293,6 @@ public class SocioResearch extends AbstractSearchable{
 		if (id_search_repres != 0){}
 			//this.updateTagCloudBridge("name", getPermutations(this.name), getId_search_repres(),em);
 	}
-	public Long getOrg_impl_id() {
-		return org_impl_id;
-	}
-	public void setOrg_impl_id(Long org_impl_id) {
-		this.org_impl_id = org_impl_id;
-	}
-	public Long getOrg_order_id() {
-		return org_order_id;
-	}
-	
-	public void setOrg_order_id(Long org_order_id) {
-		this.org_order_id = org_order_id;
-	}
-	public String getOrg_impl_name() {
-		return org_impl_name;
-	}
-	
-	public void setOrg_impl_name(String org_impl_name) {
-		this.org_impl_name = org_impl_name;
-		//this.updateTagCloudBridge("org_impl_name", getPermutations(this.org_impl_name), getId_search_repres(),em);
-		//this.getSearchRepresenter(getId_search_repres()).updateTagCloud("org_impl_name", getPermutations(this.org_impl_name));
-	}
-	public String getOrg_order_name() {
-		return org_order_name;
-	}	
-	public void setOrg_order_name(String org_order_name) {
-		this.org_order_name = org_order_name;
-	}
-	public Date getStart_date() {
-		return start_date;
-	}
 	
 	public void setStart_date(Date start_date) {
 		this.start_date = start_date;
@@ -392,12 +303,7 @@ public class SocioResearch extends AbstractSearchable{
 	public void setEnd_date(Date end_date) {
 		this.end_date = end_date;
 	}
-	public String getGen_geathering() {
-		return gen_geathering;
-	}
-	public void setGen_geathering(String gen_geathering) {
-		this.gen_geathering = gen_geathering;
-	}
+	
 	public int getSelection_size() {
 		return selection_size;
 	}
@@ -412,24 +318,7 @@ public class SocioResearch extends AbstractSearchable{
 	public void setVar_ids(ArrayList<Long> var_ids) {
 		this.var_ids = var_ids;
 	}
-	public ArrayList<String> getPublications() {
-		return publications;
-	}
-	public void setPublications(ArrayList<String> publications) {
-		this.publications = publications;
-	}
-	public ArrayList<String> getResearchers() {
-		return researchers;
-	}
-	public void setResearchers(ArrayList<String> researchers) {
-		this.researchers = researchers;
-	}
-	public String getMethod() {
-		return method;
-	}
-	public void setMethod(String method) {
-		this.method = method;
-	}
+	
 	public long getVar_weight_id() {
 		return var_weight_id;
 	}
@@ -442,36 +331,14 @@ public class SocioResearch extends AbstractSearchable{
 	public void setVar_weight_name(String var_weight_name) {
 		this.var_weight_name = var_weight_name;
 	}
-	public ArrayList<String> getConcepts() {
-		return concepts;
-	}
-	public void setConcepts(ArrayList<String> concepts) {
-		this.concepts = concepts;
-	}
+	
 	public long getId_search_repres() {
 		return id_search_repres;
 	}
 	public void setId_search_repres(long id_search_repres) {
 		this.id_search_repres = id_search_repres;
 	}
-	public ArrayList<String> getPublications_dois() {
-		return publications_dois;
-	}
-	public void setPublications_dois(ArrayList<String> publications_dois) {
-		this.publications_dois = publications_dois;
-	}
-	public String getSelection_appr_rand() {
-		return selection_appr_rand;
-	}
-	public void setSelection_appr_rand(String selection_appr_rand) {
-		this.selection_appr_rand = selection_appr_rand;
-	}
-	public String getSelection_appr_complexity() {
-		return selection_appr_complexity;
-	}
-	public void setSelection_appr_complexity(String selection_appr_complexity) {
-		this.selection_appr_complexity = selection_appr_complexity;
-	}
+	
 
 	public void addFile(String id,String desc)
 	{
@@ -481,12 +348,7 @@ public class SocioResearch extends AbstractSearchable{
 		files_ids.add(id);
 		files_descs.add(desc);
 	}
-	public ArrayList<String> getPublications_urls() {
-		return publications_urls;
-	}
-	public void setPublications_urls(ArrayList<String> publications_urls) {
-		this.publications_urls = publications_urls;
-	}
+	
 
     /**
      * @return the entity_item

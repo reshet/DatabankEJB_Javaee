@@ -19,7 +19,9 @@ import javax.persistence.*;
 
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Var.getResearchVarsLight", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.research_id = :id ORDER BY x.id")
+    @NamedQuery(name = "Var.getResearchVarsLight", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.research_id = :id ORDER BY x.id"),
+    @NamedQuery(name = "Var.getResearchVarsLightIN", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.id IN :idlist ORDER BY x.id")
+
 })
 public class Var {
         @Transient
@@ -56,17 +58,19 @@ public class Var {
         }
         public static ArrayList<VarDTO_Light> getResearchVarsLight(EntityManager em, long research_id)
         {
-            ArrayList<VarDTO_Light> list = new ArrayList<VarDTO_Light>();
-        
+           
             TypedQuery<VarDTO_Light> q = em.createNamedQuery("Var.getResearchVarsLight", VarDTO_Light.class );
             q.setParameter("id", research_id);
             List<VarDTO_Light> l = q.getResultList();
-            for(VarDTO_Light v:l)
-            {
-                list.add(v);
-            }
-
-            return list;
+            return new ArrayList<VarDTO_Light>(l);
+        }
+        public static ArrayList<VarDTO_Light> getResearchVarsLightDTOs(EntityManager em, ArrayList<Long> ids)
+        {
+           
+            TypedQuery<VarDTO_Light> q = em.createNamedQuery("Var.getResearchVarsLight", VarDTO_Light.class );
+            q.setParameter("idlist", ids);
+            List<VarDTO_Light> l = q.getResultList();
+            return new ArrayList<VarDTO_Light>(l);
         }
 	public ArrayList<String> getCortage_string() {
 		return cortage_string;
@@ -168,7 +172,7 @@ public class Var {
 		dto.setGen_research_names(getGenResearchesNames(generalized_var_ids,em));
 		dto.setGen_research_ids(getGenResearchesIds(generalized_var_ids,em));
 		dto.setVar_type(var_type);
-                dto.setFilling(entity_item.getMapped_values());
+                if(entity_item!= null)dto.setFilling(entity_item.getMapped_values());
                 if (dto instanceof RealVarDTO_Detailed) 
                 {
                     ((RealVarDTO_Detailed)dto).setFiltered_cortage(this.cortage);

@@ -153,36 +153,36 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
                 
               research = em.find(SocioResearch.class, rDTO.getId());
               research.updateFromDTO(rDTO,em);
-              addSSE("SocioResearch","gengeath", rDTO.getGen_geathering());
-              addSSE("SocioResearch","method", rDTO.getMethod());
-              ArrayList<String> concepts = rDTO.getConcepts();
-              if(concepts!=null && concepts.size()>0)
-              {
-                  for(String concept:concepts)
-                  {
-                          addSSE("SocioResearch","concept", concept);
-                  }  
-              }
-              ArrayList<String> researchers = rDTO.getResearchers();
-              if(researchers!=null && researchers.size()>0)
-              {
-                  for(String researcher:researchers)
-                  {
-                          addSSE("SocioResearch","researcher", researcher);
-                  }
-              }
-              addSSE("SocioResearch","org_impl", rDTO.getOrg_impl_name());
-              addSSE("SocioResearch","org_order", rDTO.getOrg_order_name());
-              ArrayList<String> pubs = rDTO.getPublications();
-              if(pubs!=null && pubs.size()>0)
-              {
-                  for(String pub:pubs)
-                  {
-                          addSSE("SocioResearch","publication", pub);
-                  }
-              }
-              addSSE("SocioResearch","selection_complexity", rDTO.getSel_complexity());
-              addSSE("SocioResearch","selection_randomity", rDTO.getSel_randomity());
+//              addSSE("SocioResearch","gengeath", rDTO.getGen_geathering());
+//              addSSE("SocioResearch","method", rDTO.getMethod());
+//              ArrayList<String> concepts = rDTO.getConcepts();
+//              if(concepts!=null && concepts.size()>0)
+//              {
+//                  for(String concept:concepts)
+//                  {
+//                          addSSE("SocioResearch","concept", concept);
+//                  }  
+//              }
+             // ArrayList<String> researchers = rDTO.getResearchers();
+//              if(researchers!=null && researchers.size()>0)
+//              {
+//                  for(String researcher:researchers)
+//                  {
+//                          addSSE("SocioResearch","researcher", researcher);
+//                  }
+//              }
+             // addSSE("SocioResearch","org_impl", rDTO.getOrg_impl_name());
+              //addSSE("SocioResearch","org_order", rDTO.getOrg_order_name());
+             // ArrayList<String> pubs = rDTO.getPublications();
+//              if(pubs!=null && pubs.size()>0)
+//              {
+//                  for(String pub:pubs)
+//                  {
+//                          addSSE("SocioResearch","publication", pub);
+//                  }
+//              }
+             // addSSE("SocioResearch","selection_complexity", rDTO.getSel_complexity());
+             // addSSE("SocioResearch","selection_randomity", rDTO.getSel_randomity());
               
               launchIndexing(rDTO);
               

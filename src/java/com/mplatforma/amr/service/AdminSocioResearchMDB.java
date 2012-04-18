@@ -177,7 +177,7 @@ public class AdminSocioResearchMDB implements MessageListener {
 //            .actionGet();
 
             IndexResponse response = client.prepareIndex("databank", "research",String.valueOf(dto.getID()))
-            .setSource(dto.getJson_desctiptor()
+            .setSource(dto.getJson_descriptor()
 //                    jsonBuilder()
 //                        .startObject()
 //                            .field("ID", dto.getID())
