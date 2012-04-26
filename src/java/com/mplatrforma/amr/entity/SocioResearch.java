@@ -42,6 +42,7 @@ public class SocioResearch extends AbstractSearchable{
 	private long var_weight_id;
 	private String var_weight_name;
 	private int selection_size;
+        
 //	private String gen_geathering;
 //	private String method;
 //	private String selection_appr_rand;
@@ -53,6 +54,7 @@ public class SocioResearch extends AbstractSearchable{
 //	private ArrayList<String> concepts;
         public static String SEL_SIZE_NAME = "socioresearch_sel_size";
         public static String _NAME = "socioresearch_name";
+        @Column(columnDefinition="TEXT")
         private String json_desctiptor;
         
         @OneToOne(cascade= CascadeType.PERSIST)
@@ -67,12 +69,17 @@ public class SocioResearch extends AbstractSearchable{
 		this.json_desctiptor = json_desctiptor;
 	}
 
-        
-        @Temporal(javax.persistence.TemporalType.DATE)
-	private Date start_date;
-        
-        @Temporal(javax.persistence.TemporalType.DATE)
-	private Date end_date;
+        @Column(columnDefinition="TEXT")
+        private String description_text;
+        public String getDesctiption() {
+		return description_text;
+	}
+
+
+	public void setDesctiption(String desc) {
+		this.description_text = desc;
+	}
+       
 	
         private ArrayList<String> files_ids;
 	
@@ -111,6 +118,7 @@ public class SocioResearch extends AbstractSearchable{
 		this.setVar_ids(rDTO.getVar_ids());
 		this.setVar_weight_id(rDTO.getVar_weight_id());
 		this.setVar_weight_name(rDTO.getVar_weight_name());
+                this.description_text= rDTO.getDesctiption();
 	        this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
                // this.entity_item.getMapped_values().put(SocioResearch.SEL_SIZE_NAME, String.valueof(rDTO.se));
@@ -203,6 +211,7 @@ public class SocioResearch extends AbstractSearchable{
 		
 		dto.setVar_weight_id(getVar_weight_id());
 		dto.setVar_weight_name(getVar_weight_name());
+                dto.setDesctiption(this.description_text);
 		dto.setFile_accessor_id(this.file_accessor_id);
                 if(this.entity_item!=null && this.entity_item.getMapped_values()!=null)
                         dto.setFilling(this.entity_item.getMapped_values());
@@ -234,13 +243,13 @@ public class SocioResearch extends AbstractSearchable{
 		if (id_search_repres == 0) id_search_repres = createSearchRepresenter();
 		if (getSearchRepresenter(id_search_repres,em).getEntity_id() == 0) updateEntityID(id, id_search_repres,em);
 		this.setName(rDTO.getName());
-		this.setStart_date(rDTO.getStart_date());
-		this.setEnd_date(rDTO.getEnd_date());
+		
 		this.setSelection_size(rDTO.getSelection_size());
 		//this.var_ids = rDTO.getVar_ids();
 		
 		this.setVar_weight_id(rDTO.getVar_weight_id());
 		this.setVar_weight_name(rDTO.getVar_weight_name());
+                this.description_text = rDTO.getDesctiption();
 		if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
 		//updateEntityRepresent(id_search_repres, name,em);
@@ -254,9 +263,9 @@ public class SocioResearch extends AbstractSearchable{
 		if (id_search_repres == 0) id_search_repres = createSearchRepresenter();
 		if (getSearchRepresenter(id_search_repres,em).getEntity_id() == 0) updateEntityID(id, id_search_repres,em);
 		//this.setName(rDTO.getName());
-		this.setStart_date(rDTO.getStart_date());
-		this.setEnd_date(rDTO.getEnd_date());
+		
 		this.setSelection_size(rDTO.getSelection_size());
+                 this.description_text = rDTO.getDesctiption();
 		//this.var_ids = rDTO.getVar_ids();
 		
 		
@@ -294,15 +303,7 @@ public class SocioResearch extends AbstractSearchable{
 			//this.updateTagCloudBridge("name", getPermutations(this.name), getId_search_repres(),em);
 	}
 	
-	public void setStart_date(Date start_date) {
-		this.start_date = start_date;
-	}
-	public Date getEnd_date() {
-		return end_date;
-	}
-	public void setEnd_date(Date end_date) {
-		this.end_date = end_date;
-	}
+	
 	
 	public int getSelection_size() {
 		return selection_size;
