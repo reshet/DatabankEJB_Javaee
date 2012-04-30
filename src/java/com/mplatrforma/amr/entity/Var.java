@@ -67,7 +67,7 @@ public class Var {
         public static ArrayList<VarDTO_Light> getResearchVarsLightDTOs(EntityManager em, ArrayList<Long> ids)
         {
            
-            TypedQuery<VarDTO_Light> q = em.createNamedQuery("Var.getResearchVarsLight", VarDTO_Light.class );
+            TypedQuery<VarDTO_Light> q = em.createNamedQuery("Var.getResearchVarsLightIN", VarDTO_Light.class );
             q.setParameter("idlist", ids);
             List<VarDTO_Light> l = q.getResultList();
             return new ArrayList<VarDTO_Light>(l);
@@ -141,6 +141,7 @@ public class Var {
 		dto.setId(id);
 		dto.setV_label_codes(v_label_codes);
 		dto.setV_label_values(v_label_values);
+                dto.setResearch_id(research_id);
 		if (watching_user != null)calcDistribution(watching_user,dto,em);
 			else dto.setDistribution(calcDistributionSimple());
 		return dto;
@@ -453,7 +454,7 @@ public class Var {
 		ArrayList<Double> filtered = new ArrayList<Double>();
 		ArrayList<Integer> filtered_indecies = new ArrayList<Integer>();
 		ArrayList<String> filters = watching_user.getFiltersToProcess(research_id);
-		if (filters != null && filters.size() > 0 && var_ids != null)
+		if (watching_user.getFilters_use()!=0 && filters != null && filters.size() > 0 && var_ids != null)
 		{
 			filtered = processFilters(filters, filtered_indecies,em);
 		}

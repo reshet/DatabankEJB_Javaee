@@ -4,6 +4,7 @@
  */
 package com.mplatforma.amr.service;
 
+import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
 import org.elasticsearch.index.query.QueryBuilder;
 import com.mplatforma.amr.service.remote.UserSocioResearchBeanRemote;
 import com.mplatrforma.amr.entity.*;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
@@ -37,6 +39,7 @@ import org.elasticsearch.node.Node;
 public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote{
     @PersistenceContext
     private EntityManager em;
+    @EJB UserAccountBeanRemote useracc; 
     @Override
     public SocioResearchDTO getResearch(long id) {
         
@@ -60,6 +63,12 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     public VarDTO_Detailed getVarDetailed(long id,UserAccountDTO dto) {
          Var v = em.find(Var.class, id);
          v.setEM(em);
+         if(dto.getId()!= 0 && dto.getCurrent_research() == 0)
+         {
+             dto.setCurrent_research(v.getResearch_id());
+             useracc.updateAccountResearchState(dto);
+         }
+         
         return v.toDTO_Detailed(dto,em);
     }
 
