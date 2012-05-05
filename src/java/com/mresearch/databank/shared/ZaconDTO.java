@@ -11,7 +11,7 @@ public class ZaconDTO extends ZaconDTO_Light{
 	 * 
 	 */
 	private static final long serialVersionUID = -2443613870378329241L;
-	private String contents = "���������";
+	private String contents = "";
 	private HashMap<String,String> filling;
 //	private ArrayList<String> key_words,authors;
 //	private Date date,accept_date,decline_date;
@@ -26,10 +26,23 @@ public class ZaconDTO extends ZaconDTO_Light{
 	}
 	private Long enclosure_key;
 	public ZaconDTO(){}
-	public ZaconDTO(String header, String contents)
+        static int CONTENTS_SHORTAGE_NUMBER = 350;
+	public ZaconDTO(Long id,String header, String contents,Long encl_k,HashMap<String,String> fill)
 	{
-		super(header);
-		this.contents = contents;		
+		super(id,header);
+		int end = contents.length() > CONTENTS_SHORTAGE_NUMBER? CONTENTS_SHORTAGE_NUMBER:contents.length();
+		
+                this.contents = contents.substring(0,end);
+                this.enclosure_key = encl_k;
+                this.filling = fill;
+                
+                //this.setText(dto.getCode()+": "+dto.getLabel());
+		//l.setText(dto.getCode()+": "+dto.getLabel().substring(0, end));
+	}
+        public ZaconDTO(long id,String header, String contents)
+	{
+		super(id,header);
+		this.contents = contents;
 	}
 	public String getContents() {
 		return contents;

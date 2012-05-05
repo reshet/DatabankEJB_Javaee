@@ -226,28 +226,30 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
     public ArrayList<ZaconDTO_Light> getZaconDTOs(ArrayList<Long> keys) {
 	ArrayList<ZaconDTO_Light> arr = new ArrayList<ZaconDTO_Light>();
 	if (keys != null)
-            for(Long key:keys)
-            {
-                ZaconDTO_Light dto = this.getZaconLight(key);
-                arr.add(dto);
-            }
+            return Zacon.getZaconLightDTOs(em, keys);
+//            for(Long key:keys)
+//            {
+//                ZaconDTO_Light dto = this.getZaconLight(key);
+//                arr.add(dto);
+//            }
 	return arr;
     }
 
     @Override
     public ArrayList<ZaconDTO_Light> getZaconsAll() {
-	ArrayList<ZaconDTO_Light> list = new ArrayList<ZaconDTO_Light>();
-   // SocioResearch dsResearch, detached;
-	try {
-            TypedQuery<Zacon> q = em.createQuery("select x from Zacon x",Zacon.class);
-		List<Zacon> res = (List<Zacon>)q.getResultList();
-		for(Zacon art:res)
-		{
-			list.add(art.toDTO_Light());
-		}
-            } finally {
-        }
-	return list;
+//	ArrayList<ZaconDTO_Light> list = new ArrayList<ZaconDTO_Light>();
+//   // SocioResearch dsResearch, detached;
+//	try {
+//            TypedQuery<Zacon> q = em.createQuery("select x from Zacon x",Zacon.class);
+//		List<Zacon> res = (List<Zacon>)q.getResultList();
+//		for(Zacon art:res)
+//		{
+//			list.add(art.toDTO_Light());
+//		}
+//            } finally {
+//        }
+//	return list;
+        return Zacon.getAllZaconLightDTOs(em);
 
     }
 
@@ -283,14 +285,17 @@ private Zacon addZacon(ZaconDTO ZaconDTO) {
 
     @Override
     public ArrayList<ZaconDTO> getZaconDTOs_Normal(ArrayList<Long> keys) {
-        ArrayList<ZaconDTO> arr = new ArrayList<ZaconDTO>();
+       ArrayList<ZaconDTO> arr = new ArrayList<ZaconDTO>();
 	if (keys != null)
-            for(Long key:keys)
-            {
-                ZaconDTO dto = this.getZacon(key);
-                arr.add(dto);
-            }
+            return Zacon.getZaconFullDTOs(em, keys);
+//            for(Long key:keys)
+//            {
+//                ZaconDTO_Light dto = this.getZaconLight(key);
+//                arr.add(dto);
+//            }
 	return arr;
     }
+
+   
 
 }

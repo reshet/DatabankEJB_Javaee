@@ -245,11 +245,11 @@ public class AdminSocioResearchMDB implements MessageListener {
             
             json = jsonBuilder()
                             .startObject()
-                                .field("var_ID", dto.getId())
-                                .field("var_code", dto.getCode())
-                                .field("var_name", dto.getLabel())
-                                .array("var_alt_codes",dto.getV_label_codes().toArray())
-                                .array("var_alt_values",dto.getV_label_values().toArray())
+                                .field("sociovar_ID", dto.getId())
+                                .field("sociovar_code", dto.getCode())
+                                .field("sociovar_name", dto.getLabel())
+                                .array("sociovar_alt_codes",dto.getV_label_codes().toArray())
+                                .array("sociovar_alt_values",dto.getV_label_values().toArray())
                             .endObject().string();
             
             return json;

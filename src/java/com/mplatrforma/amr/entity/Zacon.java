@@ -8,15 +8,26 @@ import com.mresearch.databank.shared.ArticleDTO;
 import com.mresearch.databank.shared.OrgDTO;
 import com.mresearch.databank.shared.ZaconDTO;
 import com.mresearch.databank.shared.ZaconDTO_Light;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Zacon.getAllLight", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO_Light(x.id, x.name) FROM Zacon x ORDER BY x.id"),
+    @NamedQuery(name = "Zacon.getLightIN", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO_Light(x.id, x.name) FROM Zacon x WHERE x.id IN :idlist ORDER BY x.id"),
+    @NamedQuery(name = "Zacon.getFullIN", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO(x.id, x.name,x.contents,x.enclosure_key,y.mapped_values) "
+                                                 + "FROM Zacon x INNER JOIN x.entity_item y"
+                                                    + " WHERE x.id IN :idlist ORDER BY x.id")
+
+})
 public class Zacon {
 	@Id
         @GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
 	private String name;
  	private String number;
+        
+        @Column(columnDefinition="TEXT")
 	private String contents;
 	private Long enclosure_key;
        
@@ -47,6 +58,27 @@ public class Zacon {
 		this.setNumber(dto.getNumber());
 		//this.setAuthors(dto.getAuthors());
 	}	
+        
+         public static ArrayList<ZaconDTO_Light> getAllZaconLightDTOs(EntityManager em)
+        {
+            TypedQuery<ZaconDTO_Light> q = em.createNamedQuery("Zacon.getAllLight", ZaconDTO_Light.class);
+            List<ZaconDTO_Light> l = q.getResultList();
+            return new ArrayList<ZaconDTO_Light>(l);
+        }
+        public static ArrayList<ZaconDTO_Light> getZaconLightDTOs(EntityManager em, ArrayList<Long> ids)
+        {
+            TypedQuery<ZaconDTO_Light> q = em.createNamedQuery("Zacon.getLightIN", ZaconDTO_Light.class );
+            q.setParameter("idlist", ids);
+            List<ZaconDTO_Light> l = q.getResultList();
+            return new ArrayList<ZaconDTO_Light>(l);
+        }
+        public static ArrayList<ZaconDTO> getZaconFullDTOs(EntityManager em, ArrayList<Long> ids)
+        {
+            TypedQuery<ZaconDTO> q = em.createNamedQuery("Zacon.getFullIN", ZaconDTO.class);
+            q.setParameter("idlist", ids);
+            List<ZaconDTO> l = q.getResultList();
+            return new ArrayList<ZaconDTO>(l);
+        }
         public void updateFromDTO(ZaconDTO rDTO)
 	{
                 if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getHeader());
@@ -58,7 +90,7 @@ public class Zacon {
 	}
 	public ZaconDTO toDTO()
 	{
-		ZaconDTO dto = new ZaconDTO(name,getContents());
+		ZaconDTO dto = new ZaconDTO(id,name,getContents());
 		dto.setId(this.getId());
 		dto.setEnclosure_key(getEnclosure_key());
 		//dto.setDate(date);
@@ -72,7 +104,7 @@ public class Zacon {
 	}
         public ZaconDTO_Light toDTO_Light()
 	{
-		ZaconDTO_Light dto = new ZaconDTO_Light(name);
+		ZaconDTO_Light dto = new ZaconDTO_Light(id,name);
 		dto.setId(this.getId());
 		//dto.setEnclosure_key(getEnclosure_key());
 		//dto.setDate(date);

@@ -177,7 +177,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
           MetaUnitMultivaluedEntity root = new MetaUnitMultivaluedEntity("sociovar","Var Metadata Structure",0);
           ArrayList<MetaUnit> arr = new ArrayList<MetaUnit>();
           
-          arr.add(new MetaUnitString("name","Название переменной"));
+          arr.add(new MetaUnitString("name","Текст вопроса"));
           //arr.add(new MetaUnitString("code","Код переменной"));
           
           //arr.add(new MetaUnitString("alt_codes","Коды альтернатив"));
