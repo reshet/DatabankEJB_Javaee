@@ -20,14 +20,10 @@ import com.mplatrforma.amr.entity.UserAccount;
 import com.mresearch.databank.shared.UserAccountDTO;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import javax.ejb.Stateless;
-import javax.ejb.LocalBean;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 /**
  *
@@ -37,19 +33,22 @@ import javax.persistence.TypedQuery;
 @Stateless(mappedName="UserAccountRemoteBean",name="UserAccountRemoteBean")
 public class UserAccountSessionBean implements UserAccountBeanRemote{
 
+    
+    
     @PersistenceContext
     private EntityManager em;
    
     @Override
     public UserAccountDTO getUserAccount(String email, String password) {
-     //  createDefaultDatabankStructure();
-     //  initDefaults();
+       //initDefaults();
+       //createDefaultDatabankStructure();
        //return new UserAccountDTO(email,email, password);
-     //  createDefaultDatabankVarStructure();
-      //  createDefaultDatabankVarStructure();
-      // createDefaultDatabankLawStructure();
+       //createDefaultDatabankVarStructure();
+       //  createDefaultDatabankVarStructure();
+       //createDefaultDatabankLawStructure();
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
-    }       
+    } 
+    
      private void createDefaultDatabankStructure()
       {
           //DatabankStructure<SocioResearch> db = new DatabankStructure<SocioResearch>("socioresearch");
@@ -255,6 +254,11 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
     @Override
     public void initDefaults() {
         new UserAccount(em).createDefaults();
+        createDefaultDatabankStructure();
+       //return new UserAccountDTO(email,email, password);
+        createDefaultDatabankVarStructure();
+       //  createDefaultDatabankVarStructure();
+        createDefaultDatabankLawStructure();
     }
 
     @Override

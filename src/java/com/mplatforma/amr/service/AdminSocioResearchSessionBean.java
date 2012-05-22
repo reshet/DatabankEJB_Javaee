@@ -301,9 +301,9 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
         
         try {
             
-            QueueConnection connection = connectionFactory.createQueueConnection();
-            QueueSession session = connection.createQueueSession(false, 0);
-            QueueSender q_sender = session.createSender(queue);
+//            QueueConnection connection = connectionFactory.createQueueConnection();
+//            QueueSession session = connection.createQueueSession(false, 0);
+//            QueueSender q_sender = session.createSender(queue);
 
             ObjectMessage message = session.createObjectMessage();
             message.setStringProperty("title", "command to parse SPSS file");
@@ -313,9 +313,9 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
             message.setObject(job);   
           //  message.setJMSDestination(queue);
             q_sender.send(message);
-            q_sender.close();
-            connection.close();
-            //response.sendRedirect("ListNews");
+//            q_sender.close();
+//            connection.close();
+//            //response.sendRedirect("ListNews");
 
         } catch (JMSException ex) {
             ex.printStackTrace();

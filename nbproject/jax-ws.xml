@@ -19,6 +19,9 @@
     <service name="AdminLawSessionBean">
       <implementation-class>com.mplatforma.amr.service.AdminLawSessionBean</implementation-class>
     </service>
+    <service name="HardResetWebService">
+      <implementation-class>com.mplatforma.db.reset.HardResetWebService</implementation-class>
+    </service>
   </services>
   <clients/>
 </jax-ws>
