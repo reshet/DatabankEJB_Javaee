@@ -156,6 +156,12 @@ public class UserAccount implements Serializable{
 	    	defLawAdmin.setPassword("default");
 	    	em.persist(defLawAdmin);
 	    	
+                UserAccount defPubAdmin = new UserAccount();
+	    	defPubAdmin.setAccountType("pubAdmin");
+	    	defPubAdmin.setEmailAddress("pub@admin.com");
+	    	defPubAdmin.setPassword("default");
+	    	em.persist(defPubAdmin);
+	    	
 	    	UserAccount defJuryConsultant = new UserAccount();
 	    	defJuryConsultant .setAccountType("juryConsultant");
 	    	defJuryConsultant .setEmailAddress("jury@consultant.com");

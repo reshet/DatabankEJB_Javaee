@@ -112,44 +112,20 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
 	return list;
 
     }
-
-    @Override
-    public Boolean deleteZacon(Long id) {
-	try {
-        Zacon zacon = em.find(Zacon.class, id);
-        if (zacon != null) {
-            em.remove(zacon);
-        }
-        } finally {
-        }
-        return true;
-
-    }
-
-    @Override
-    public ZaconDTO getZacon(Long id) {
-        Zacon dsZacon, detached;
-
-        try {
-        dsZacon = em.find(Zacon.class, id);
-        } finally {
-        }
-
-        return dsZacon.toDTO();
-
-    }
-    
-    public ZaconDTO_Light getZaconLight(Long id) {
-        Zacon dsZacon, detached;
-
-        try {
-        dsZacon = em.find(Zacon.class, id);
-        } finally {
-        }
-
-        return dsZacon.toDTO_Light();
-
-    }
+     private Article addArticle(ArticleDTO articleDTO) {
+      Article article = null;
+      try {
+      // for this version of the app, just get hardwired 'default' user
+      //UserAccount currentUser = UserAccount.getDefaultUser(); // detached object
+      //currentUser = pm.makePersistent(currentUser); // attach
+        article = new Article(articleDTO);
+        em.persist(article);
+      } finally {
+        em.close();
+      }
+      return article;
+}
+   
         @Resource(mappedName="jms/myQCF")
     private  QueueConnectionFactory connectionFactory;
 
@@ -197,6 +173,44 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
         } catch (JMSException ex) {
             ex.printStackTrace();
         }
+    }
+    
+        @Override
+    public Boolean deleteZacon(Long id) {
+	try {
+        Zacon zacon = em.find(Zacon.class, id);
+        if (zacon != null) {
+            em.remove(zacon);
+        }
+        } finally {
+        }
+        return true;
+
+    }
+
+    @Override
+    public ZaconDTO getZacon(Long id) {
+        Zacon dsZacon, detached;
+
+        try {
+        dsZacon = em.find(Zacon.class, id);
+        } finally {
+        }
+
+        return dsZacon.toDTO();
+
+    }
+    
+    public ZaconDTO_Light getZaconLight(Long id) {
+        Zacon dsZacon, detached;
+
+        try {
+        dsZacon = em.find(Zacon.class, id);
+        } finally {
+        }
+
+        return dsZacon.toDTO_Light();
+
     }
     
     @Override
@@ -256,19 +270,7 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 
-     private Article addArticle(ArticleDTO articleDTO) {
-      Article article = null;
-      try {
-      // for this version of the app, just get hardwired 'default' user
-      //UserAccount currentUser = UserAccount.getDefaultUser(); // detached object
-      //currentUser = pm.makePersistent(currentUser); // attach
-        article = new Article(articleDTO);
-        em.persist(article);
-      } finally {
-        em.close();
-      }
-      return article;
-}
+
 private Zacon addZacon(ZaconDTO ZaconDTO) {
     Zacon Zacon = null;
     try {

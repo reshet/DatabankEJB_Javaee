@@ -20,5 +20,6 @@ public interface AdminLawBeanRemote {
   
   ArrayList<ZaconDTO> getZaconDTOs_Normal(ArrayList<Long> keys);
   ArrayList<ZaconDTO_Light> getZaconsAll();
+  
 
 }

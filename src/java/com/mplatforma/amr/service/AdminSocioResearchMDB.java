@@ -97,6 +97,11 @@ public class AdminSocioResearchMDB implements MessageListener {
                     IndexLawJobFast job = (IndexLawJobFast)obj;
                     perform_indexing_law(job.getDto());         
                 }
+                 else if (obj instanceof IndexPubJobFast)
+                {
+                    IndexPubJobFast job = (IndexPubJobFast)obj;
+                    perform_indexing_pub(job.getDto());         
+                }
             }
         } catch (Throwable te) {
             te.printStackTrace();
@@ -357,7 +362,55 @@ public class AdminSocioResearchMDB implements MessageListener {
             // node.close();
         }
     }
-    
+    private void perform_indexing_pub(PublicationDTO dto)
+    {
+        
+        
+        //SocioResearchDTO dto = new SocioResearchDTO();
+        //dto.setId((long)1);
+        //dto.setName("name");
+        //dto.setMethod("method");
+        //dto.setOrg_impl_name("org.impl.name");
+        //String t = System.getProperty("java.classpath");
+       // Node node = nodeBuilder().client(true).node();
+        try {
+       
+            
+            Client client = node.client();
+
+    // on shutdown
+
+           
+//            IndexResponse response = client.prepareIndex("twitter", "tweet")
+//            .setSource(jsonBuilder()
+//                        .startObject()
+//                            .field("user", "kimchy")
+//                            .field("postDate", new Date())
+//                            .field("message", "trying out Elastic Search")
+//                        .endObject()
+//                      )
+//            .execute()
+//            .actionGet();
+
+            IndexResponse response = client.prepareIndex("databank", "publication",String.valueOf(dto.getId()))
+            .setSource(dto.getJson_desctiptor())
+            .execute()
+            .actionGet();
+
+//            GetResponse response2 = client.prepareGet("twitter", "tweet", "1")
+//                 .execute()
+//                 .actionGet();
+            
+            System.out.println(response.toString());
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally
+        {
+            // node.close();
+        }
+    }
     
     private void parseSPSS(long blobkey,long length)
     {

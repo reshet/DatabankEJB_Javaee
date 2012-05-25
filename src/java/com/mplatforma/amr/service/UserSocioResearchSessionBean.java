@@ -692,12 +692,17 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     @Override
     public ArrayList<Long> getEntityItemTaggedEntitiesIDs(Long id_item) {
         MetaUnitEntityItem item = em.find(MetaUnitEntityItem.class,id_item);
-        List<Long> ids = item.getTagged_entities_ids();
         ArrayList<Long> arr = new ArrayList<Long>();
-        for(Long id:ids)
+        if(item != null)
         {
-            arr.add(id);
+            List<Long> ids = item.getTagged_entities_ids();
+            if(ids != null)
+            for(Long id:ids)
+            {
+                arr.add(id);
+            }
         }
+        
         return arr;
     }
 
