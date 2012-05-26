@@ -17,5 +17,7 @@ public interface AdminJuryBeanRemote {
   ArrayList<ConsultationDTO_Light> getConsultationsAll();
   ArrayList<ConsultationDTO_Light> getConsultations(int limit,int offset);
     ArrayList<TopicDTO> getTopics();
+   JuryBundleDTO getStartup();
+    
 
 }

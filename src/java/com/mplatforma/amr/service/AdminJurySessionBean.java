@@ -249,6 +249,20 @@ private Consultation addConsultation(ConsultationDTO ConsultationDTO) {
         return tops;
     }
 
-   
-
+    @Override
+    public JuryBundleDTO getStartup() {
+        MetaUnitMultivaluedEntityDTO meta = wheredb.getDatabankStructure("consultation");
+        ArrayList<ConsultationDTO_Light> last_light = getConsultations(10, 0);
+        
+        ArrayList<Long> ids = new ArrayList<Long>();
+        for(ConsultationDTO_Light l:last_light)
+        {
+                ids.add(l.getId());
+        }
+        
+        ArrayList<ConsultationDTO> last = getConsultationDTOs_Normal(ids);
+        JuryBundleDTO dto = new JuryBundleDTO(meta, last,getTopics());
+        return dto;
+    }
+    
 }

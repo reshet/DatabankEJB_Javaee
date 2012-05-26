@@ -15,7 +15,7 @@ public class ConsultationDTO_Light implements Serializable,ICatalogizable,IPicka
 	private String question = "";
 	private Date date;
 	public ConsultationDTO_Light(){}
-	public ConsultationDTO_Light(long id,String question,Date date)
+	public ConsultationDTO_Light(Long id,String question,Date date)
 	{
                 this.id = id;
 		this.question = question;

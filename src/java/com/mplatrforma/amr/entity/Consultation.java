@@ -15,7 +15,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Consultation.getLightIN", query = "SELECT NEW com.mresearch.databank.shared.ConsultationDTO_Light(x.id, x.question,x.date_ask) FROM Consultation x WHERE x.id IN :idlist ORDER BY x.date_ask DESC"),
     @NamedQuery(name = "Consultation.getFullIN", query = "SELECT NEW com.mresearch.databank.shared.ConsultationDTO(x.id, x.question, x.answer, x.date_ask, x.date_ans, x.published, y.mapped_values) "
                                                  + "FROM Consultation x INNER JOIN x.entity_item y"
-                                                      + " WHERE x.id IN :idlist ORDER BY x.date_ask DESC")
+                                                      + " WHERE x.id IN :idlist AND x.answer IS NOT NULL AND LENGTH(x.answer) > 0 AND x.published = 1 ORDER BY x.date_ask DESC")
 
 })
 public class Consultation {

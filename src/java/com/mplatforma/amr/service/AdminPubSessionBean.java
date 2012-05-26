@@ -251,6 +251,22 @@ private Publication addPublication(PublicationDTO PublicationDTO) {
         return tops;
     }
 
+    @Override
+    public PublicationsBundleDTO getStartup() {
+        MetaUnitMultivaluedEntityDTO meta = wheredb.getDatabankStructure("publication");
+        ArrayList<PublicationDTO_Light> last_light = getPublications(10, 0);
+        
+        ArrayList<Long> ids = new ArrayList<Long>();
+        for(PublicationDTO_Light l:last_light)
+        {
+                ids.add(l.getId());
+        }
+        
+        ArrayList<PublicationDTO> last = getPublicationDTOs_Normal(ids);
+        PublicationsBundleDTO dto = new PublicationsBundleDTO(meta,last_light,last,getTopics());
+        return dto;
+    }
+
    
 
 }

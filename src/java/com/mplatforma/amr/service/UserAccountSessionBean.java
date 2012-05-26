@@ -48,6 +48,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
        //createDefaultDatabankVarStructure();
        //  createDefaultDatabankVarStructure();
        //createDefaultDatabankLawStructure();
+       // initDefaults();
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
     } 
     
@@ -277,6 +278,40 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
           int b = 2;
       }
 
+      private void createDefaultDatabankJuryStructure()
+      {
+          //DatabankStructure<SocioResearch> db = new DatabankStructure<SocioResearch>("socioresearch");
+          //MetaUnitMultivalued<SocioResearch> root = new MetaUnitMultivalued<SocioResearch>("Socioresearch Metadata Structure");
+          
+          DatabankStructure db = new DatabankStructure("consultation");
+         
+          MetaUnitMultivaluedEntity root = new MetaUnitMultivaluedEntity("consultation","consultation Metadata Structure",0);
+          ArrayList<MetaUnit> arr = new ArrayList<MetaUnit>();
+          
+          arr.add(new MetaUnitString("question","Вопрос"));
+          arr.add(new MetaUnitString("asker","Имя задавшего вопрос пользователя"));
+          arr.add(new MetaUnitString("answer","Ответ специалиста"));
+          arr.add(new MetaUnitDate("date_ask","Дата вопроса"));
+          arr.add(new MetaUnitDate("date_ans","Дата ответа"));
+         
+          MetaUnitMultivaluedEntity catalog = new MetaUnitMultivaluedEntity(CONSULTATION_TOPIC,"Рубрика", 0);
+          arr.add(catalog);
+          
+          
+          
+//          MetaUnitMultivaluedStructure alternatives = new MetaUnitMultivaluedStructure("alt","Даты исследования");
+//          ArrayList<MetaUnit> arr_d = new ArrayList<MetaUnit>();
+//          arr_d.add(new MetaUnitMultivaluedEntity("code","Код альтернативы",0));
+//          arr_d.add(new MetaUnitMultivaluedEntity("value","Текст альтернативы",0));
+//          alternatives.setSub_meta_units(arr_d);
+//          arr.add(alternatives);
+          root.setSub_meta_units(arr);
+//          em.persist(root);
+          db.setRoot(root);
+          em.persist(db);
+          
+          int b = 2;
+      }
     @Override
     public UserAccountDTO updateAccountResearchState(UserAccountDTO dto) {
         UserAccount account;
@@ -297,8 +332,8 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
         //createDefaultDatabankStructure();
        // createDefaultDatabankVarStructure();
         //createDefaultDatabankLawStructure();
-        //createDefaultDatabankPubStructure();
-        
+       // createDefaultDatabankPubStructure();
+     //   createDefaultDatabankJuryStructure();
     }
 
     @Override

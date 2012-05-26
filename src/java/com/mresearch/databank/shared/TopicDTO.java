@@ -15,10 +15,11 @@ public class TopicDTO implements Serializable,ICatalogizable,IPickableElement{
 	private String header = "";
 	private ArrayList<Long> items;
 	public TopicDTO(){}
-	public TopicDTO(long id,String header,ArrayList<Long> items)
+	public TopicDTO(long id,String header,final ArrayList<Long> items)
 	{
-        this.id = id;
-		this.header = header;
+           this.id = id;
+	   this.header = header;
+           this.items = items;
 	}
 	public String getHeader() {
 		return header;

@@ -29,7 +29,7 @@ public class ConsultationDTO extends ConsultationDTO_Light{
 		this.json_desctiptor = json_desctiptor;
 	}
 	public ConsultationDTO(){}
-	public ConsultationDTO(long id,String question, String answer,Date date,Date date_ans,int isPublished,HashMap<String,String> fill)
+	public ConsultationDTO(Long id,String question, String answer,Date date,Date date_ans,Integer isPublished,HashMap<String,String> fill)
 	{
 		super(id,question,date);
 		this.setanswer(answer);
