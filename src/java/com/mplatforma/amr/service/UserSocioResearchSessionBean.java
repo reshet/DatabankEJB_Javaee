@@ -349,14 +349,27 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
                 );
             Client client = node.client();
             
+            
             SearchResponse response = client.prepareSearch("databank").setTypes(types_to_search)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(json_query)
                 .setExplain(true)
-                .execute()
+                //.setHighlighterEncoder("\"fields\" : {\"_all\" : {}}")
+                .addHighlightedField("_all")
+                 .execute()
                 .actionGet();
+            
+            String ss =  client.prepareSearch("databank").setTypes(types_to_search)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(json_query)
+                .setExplain(true)
+                //.setHighlighterEncoder("\"fields\" : {\"_all\" : {}}")
+                .addHighlightedField("_all")
+                    .toString();
             int b = 2;
+           // String s = response.hits().getAt(0).getHighlightFields().toString();
             return response.toString();
+            
         }
         catch(Exception ex)
         {

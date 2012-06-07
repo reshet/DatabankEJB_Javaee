@@ -199,7 +199,9 @@ private Consultation addConsultation(ConsultationDTO ConsultationDTO) {
     //currentUser = pm.makePersistent(currentUser); // attach
       Consultation = new Consultation(ConsultationDTO);
       em.persist(Consultation);
-      launchIndexingJury(ConsultationDTO);
+      ConsultationDTO dto = Consultation.toDTO();
+      dto.setJson_desctiptor(ConsultationDTO.getJson_desctiptor());
+      launchIndexingJury(dto);
     } finally {
     }
     return Consultation;

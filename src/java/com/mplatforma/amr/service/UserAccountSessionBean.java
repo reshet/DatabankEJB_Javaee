@@ -4,22 +4,15 @@
  */
 package com.mplatforma.amr.service;
 
+import com.mplatforma.amr.service.remote.AdminPubBeanRemote;
 import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
-import com.mplatrforma.amr.entity.DatabankStructure;
-
-import com.mplatrforma.amr.entity.MetaUnit;
-import com.mplatrforma.amr.entity.MetaUnitDate;
-import com.mplatrforma.amr.entity.MetaUnitEntityItem;
-import com.mplatrforma.amr.entity.MetaUnitInteger;
-import com.mplatrforma.amr.entity.MetaUnitMultivalued;
-
-import com.mplatrforma.amr.entity.MetaUnitMultivaluedEntity;
-import com.mplatrforma.amr.entity.MetaUnitMultivaluedStructure;
-import com.mplatrforma.amr.entity.MetaUnitString;
-import com.mplatrforma.amr.entity.UserAccount;
+import com.mplatrforma.amr.entity.*;
+import com.mresearch.databank.shared.PublicationDTO_Light;
+import com.mresearch.databank.shared.StartupBundleDTO;
 import com.mresearch.databank.shared.UserAccountDTO;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
@@ -37,6 +30,8 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
     
     @PersistenceContext
     private EntityManager em;
+    
+    @EJB AdminPubBeanRemote pubbean;
    
     public static String PUBLICATION_TOPIC="topic";
     public static String CONSULTATION_TOPIC="topic";
@@ -49,6 +44,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
        //  createDefaultDatabankVarStructure();
        //createDefaultDatabankLawStructure();
        // initDefaults();
+       // createDefaultStartPage();
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
     } 
     
@@ -65,7 +61,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
           arr.add(new MetaUnitString("name","Название исследования"));
           
           //MetaUnitMultivalued<SocioResearch> dates = new MetaUnitMultivalued<SocioResearch>("Даты исследования");
-          MetaUnitMultivaluedStructure dates = new MetaUnitMultivaluedStructure("socioresearch","Даты исследования");
+          MetaUnitMultivaluedStructure dates = new MetaUnitMultivaluedStructure("dates","Даты исследования");
           ArrayList<MetaUnit> arr_d = new ArrayList<MetaUnit>();
           arr_d.add(new MetaUnitDate("start_date","Дата начала полевого этапа"));
           arr_d.add(new MetaUnitDate("end_date","Дата конца полевого этапа"));
@@ -312,6 +308,15 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
           
           int b = 2;
       }
+       private void createDefaultStartPage()
+      {
+          //DatabankStructure<SocioResearch> db = new DatabankStructure<SocioResearch>("socioresearch");
+          //MetaUnitMultivalued<SocioResearch> root = new MetaUnitMultivalued<SocioResearch>("Socioresearch Metadata Structure");
+          
+          DatabankStartPage p = new DatabankStartPage();
+          p.setPubs_last_show(new Long(5));
+          em.persist(p);
+      }
     @Override
     public UserAccountDTO updateAccountResearchState(UserAccountDTO dto) {
         UserAccount account;
@@ -339,6 +344,16 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
     @Override
     public UserAccountDTO getDefaultUser() {
             return UserAccount.toDTO(new UserAccount(em).getDefaultUser());
+    }
+
+    @Override
+    public StartupBundleDTO getStartupContent() {
+        
+        DatabankStartPage d = DatabankStartPage.getStartPageSingleton(em);
+        ArrayList<PublicationDTO_Light> pubs = pubbean.getPublications(d.getPubs_last_show().intValue(), 0);
+        StartupBundleDTO dto = d.toDTO();
+        dto.setIndex_last(pubs);
+        return dto;
     }
     
 }

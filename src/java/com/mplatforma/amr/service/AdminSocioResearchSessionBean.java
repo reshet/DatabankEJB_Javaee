@@ -8,29 +8,7 @@ import com.mplatforma.amr.service.remote.AdminSocioResearchBeanRemote;
 import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
 import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
 
-import com.mplatrforma.amr.entity.DatabankStructure;
-import com.mplatrforma.amr.entity.MetaUnit;
-import com.mplatrforma.amr.entity.MetaUnit3;
-import com.mplatrforma.amr.entity.MetaUnitDate;
-import com.mplatrforma.amr.entity.MetaUnitDate3;
-import com.mplatrforma.amr.entity.MetaUnitDouble;
-import com.mplatrforma.amr.entity.MetaUnitDouble3;
-import com.mplatrforma.amr.entity.MetaUnitEntityItem;
-import com.mplatrforma.amr.entity.MetaUnitFile;
-import com.mplatrforma.amr.entity.MetaUnitInteger;
-import com.mplatrforma.amr.entity.MetaUnitInteger3;
-
-import com.mplatrforma.amr.entity.MetaUnitMultivalued;
-import com.mplatrforma.amr.entity.MetaUnitMultivaluedEntity;
-import com.mplatrforma.amr.entity.MetaUnitMultivaluedStructure;
-import com.mplatrforma.amr.entity.MetaUnitString;
-import com.mplatrforma.amr.entity.MetaUnitString3;
-import com.mplatrforma.amr.entity.Organization;
-import com.mplatrforma.amr.entity.ResearchFilesAccessor;
-import com.mplatrforma.amr.entity.SingleStringEntity;
-import com.mplatrforma.amr.entity.SocioResearch;
-import com.mplatrforma.amr.entity.UserAccount;
-import com.mplatrforma.amr.entity.Var;
+import com.mplatrforma.amr.entity.*;
 import com.mresearch.databank.jobs.*;
 import com.mresearch.databank.shared.*;
 import java.io.IOException;
@@ -676,6 +654,13 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
             item_old.setTagged_entities_ids(new_tagged_ids);
             em.persist(item_old);
          }
+    }
+
+    @Override
+    public void setStartupContent(StartupBundleDTO dto) {
+        DatabankStartPage d = DatabankStartPage.getStartPageSingleton(em);
+        d.updateFromDTO(em, dto);
+        em.persist(d);
     }
     
     

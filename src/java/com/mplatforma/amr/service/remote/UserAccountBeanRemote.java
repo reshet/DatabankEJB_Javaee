@@ -1,5 +1,6 @@
 package com.mplatforma.amr.service.remote;
 
+import com.mresearch.databank.shared.StartupBundleDTO;
 import javax.ejb.Remote;
 
 import com.mresearch.databank.shared.UserAccountDTO;
@@ -11,5 +12,6 @@ public interface UserAccountBeanRemote {
     UserAccountDTO getDefaultUser();   
     UserAccountDTO updateAccountResearchState(UserAccountDTO dto);
     void initDefaults();
+    StartupBundleDTO getStartupContent();
     
 }

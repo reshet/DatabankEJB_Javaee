@@ -102,7 +102,7 @@ public class Publication {
 	public PublicationDTO toDTO()
 	{
 		PublicationDTO dto = new PublicationDTO(getId(), getName(), getSubheading(),getContents(), getDate_publ(),getEnclosure_key(),getEntity_item().getMapped_values());
-		//dto.setId(this.getId());
+                //dto.setId(this.getId());
 		//dto.setEnclosure_key(getEnclosure_key());
 		//dto.setDate(date);
 		//dto.setAccept_date(accept_date);

@@ -12,6 +12,7 @@ import com.mplatrforma.amr.entity.Var;
 import com.mplatrforma.amr.entity.Zacon;
 import com.mresearch.databank.jobs.IndexLawJobFast;
 import com.mresearch.databank.shared.ArticleDTO;
+import com.mresearch.databank.shared.ConsultationDTO;
 import com.mresearch.databank.shared.ZaconDTO;
 import com.mresearch.databank.shared.ZaconDTO_Light;
 import java.util.ArrayList;
@@ -279,7 +280,9 @@ private Zacon addZacon(ZaconDTO ZaconDTO) {
     //currentUser = pm.makePersistent(currentUser); // attach
       Zacon = new Zacon(ZaconDTO);
       em.persist(Zacon);
-      launchIndexingLaw(ZaconDTO);
+      ZaconDTO dto = Zacon.toDTO();
+      dto.setJson_desctiptor(ZaconDTO.getJson_desctiptor());
+      launchIndexingLaw(dto);
     } finally {
     }
     return Zacon;

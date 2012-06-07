@@ -193,18 +193,21 @@ public class AdminPubSessionBean implements AdminPubBeanRemote{
     // "Insert Code > Add Business Method")
 
 
-private Publication addPublication(PublicationDTO PublicationDTO) {
-    Publication Publication = null;
+private Publication addPublication(PublicationDTO publicationDTO) {
+    Publication publication = null;
     try {
     // for this version of the app, just get hardwired 'default' user
     //UserAccount currentUser = UserAccount.getDefaultUser(); // detached object
     //currentUser = pm.makePersistent(currentUser); // attach
-      Publication = new Publication(PublicationDTO);
-      em.persist(Publication);
-      launchIndexingPub(PublicationDTO);
+      publication = new Publication(publicationDTO);
+      em.persist(publication);
+      
+      PublicationDTO dto = publication.toDTO();
+      dto.setJson_desctiptor(publicationDTO.getJson_desctiptor());
+      launchIndexingPub(dto);
     } finally {
     }
-    return Publication;
+    return publication;
 }
 
     @Override

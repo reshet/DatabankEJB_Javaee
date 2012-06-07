@@ -1,17 +1,8 @@
 package com.mplatforma.amr.service.remote;
 
-import com.mresearch.databank.shared.MetaUnitDTO;
-import com.mresearch.databank.shared.MetaUnitEntityItemDTO;
-import com.mresearch.databank.shared.MetaUnitMultivaluedDTO;
-import com.mresearch.databank.shared.MetaUnitMultivaluedEntityDTO;
-import com.mresearch.databank.shared.MetaUnitMultivaluedStructureDTO;
-import com.mresearch.databank.shared.OrgDTO;
-import com.mresearch.databank.shared.ResearchFilesDTO;
-import com.mresearch.databank.shared.SocioResearchDTO;
-import com.mresearch.databank.shared.UserAccountDTO;
+import com.mresearch.databank.shared.*;
 import javax.ejb.Remote;
 
-import com.mresearch.databank.shared.VarDTO_Detailed;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,4 +33,6 @@ public interface AdminSocioResearchBeanRemote {
       void updateMetaUnitEntityItemLinks(MetaUnitEntityItemDTO old,MetaUnitEntityItemDTO nev);
       void updateMetaUnitEntityItemLinks(MetaUnitEntityItemDTO dto);
       void updateMetaUnitEntityItemLinks(Long item_id,ArrayList<Long> tagged_ids,String identifier);
+      
+      void setStartupContent(StartupBundleDTO dto);
 }

@@ -218,9 +218,9 @@ public class SocioResearch extends AbstractSearchable{
                 
 		return dto;
 	}
-        public SocioResearchDTO toLightDTO()
+        public SocioResearchDTO_Light toLightDTO()
 	{
-		SocioResearchDTO  dto = new SocioResearchDTO();
+		SocioResearchDTO_Light  dto = new SocioResearchDTO_Light();
 		dto.setId(id);
 		dto.setName(getName());
 		return dto;
