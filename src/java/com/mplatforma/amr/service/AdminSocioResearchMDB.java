@@ -16,6 +16,7 @@ import com.mplatrforma.amr.entity.SocioResearch;
 import com.mplatrforma.amr.entity.Var;
 import com.mresearch.databank.jobs.*;
 import com.mresearch.databank.shared.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.annotation.Resource;
@@ -26,6 +27,9 @@ import javax.ejb.MessageDrivenContext;
 import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.opendatafoundation.data.FileFormatInfo;
 import org.opendatafoundation.data.FileFormatInfo.Format;
 import org.opendatafoundation.data.mod.SPSSFile;
@@ -36,9 +40,12 @@ import org.opendatafoundation.data.mod.SPSSVariable;
 import org.w3c.dom.Document;
 import org.elasticsearch.action.index.IndexResponse;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 
 import static org.elasticsearch.node.NodeBuilder.*;
+import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  *
@@ -107,6 +114,11 @@ public class AdminSocioResearchMDB implements MessageListener {
                     IndexJuryJobFast job = (IndexJuryJobFast)obj;
                     perform_indexing_jury(job.getDto());         
                 }
+                else if (obj instanceof DeleteIndexiesJob)
+                {
+                   DeleteIndexiesJob job = (DeleteIndexiesJob)obj;
+                    perform_delete_indexies(job.getIds(), job.getType());    
+                }
             }
         } catch (Throwable te) {
             te.printStackTrace();
@@ -156,6 +168,54 @@ public class AdminSocioResearchMDB implements MessageListener {
     }
     
     @EJB UserSocioResearchBeanRemote U_bean;
+    
+    private void perform_delete_indexies(ArrayList<Long> ids,String type)
+    {
+        //SocioResearchDTO dto = new SocioResearchDTO();
+        //dto.setId((long)1);
+        //dto.setName("name");
+        //dto.setMethod("method");
+        //dto.setOrg_impl_name("org.impl.name");
+        //String t = System.getProperty("java.classpath");
+       // Node node = nodeBuilder().client(true).node();
+        try {
+       
+            
+            Client client = node.client();
+
+    // on shutdown
+
+           
+//            IndexResponse response = client.prepareIndex("twitter", "tweet")
+//            .setSource(jsonBuilder()
+//                        .startObject()
+//                            .field("user", "kimchy")
+//                            .field("postDate", new Date())
+//                            .field("message", "trying out Elastic Search")
+//                        .endObject()
+//                      )
+//            .execute()
+//            .actionGet();
+            String [] indecies = new String [ids.size()];
+            int i = 0;
+            for(Long ind:ids)
+            {
+                indecies[i++]=String.valueOf(ind);
+            }
+            DeleteByQueryRequest req = new DeleteByQueryRequest().types(type).indices(indecies);
+           DeleteByQueryResponse resp = client.prepareDeleteByQuery(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
+            System.out.println(resp.toString());
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally
+        {
+            // node.close();
+        }
+    }
+    
+    
     private void perform_indexing(long id_research)
     {
         
@@ -307,7 +367,7 @@ public class AdminSocioResearchMDB implements MessageListener {
 //                 .execute()
 //                 .actionGet();
             
-            System.out.println(response.toString());
+            System.out.println(response.index());
             
         } catch (Exception ex) {
             Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
@@ -404,50 +464,83 @@ public class AdminSocioResearchMDB implements MessageListener {
     
     private void parseSPSS(long blobkey,long length)
     {
-        System.out.println("PARSE SPSS MDB, em = "+em);
-        
-        Long socioresearch_key = null;
-	byte [] arr = new byte[(int)length];
-        
-
-
-
-
-        RxStoredDTO dto = store.getFileInfo(blobkey);
-	arr = store.getFileContents(blobkey);
-        SPSSFile s = new SPSSFile(arr);
-        String ans = "";
-        String answer = "";
-        ans = "file_cr";
-        ans+= "length = "+arr.length;
-        //ans+="fetch_size = "+String.valueOf(b_serv.MAX_BLOB_FETCH_SIZE)+ " ";
-        byte [] arr_first = new byte[100];
-        for(int i = 0; i < 100;i++)
-        {
-                arr_first[i] = arr[i];
-        }
-        ans+=new String(arr_first);
-
         try {
-                s.loadMetadata();
-                ans+=" meta_loaded";
-                s.loadData();
-                ans+=" data_loaded";
-                //org.w3c.dom.Document doc1 = s.getDDI3LogicalProduct();
-                org.w3c.dom.Document doc2 = s.getDDI3PhysicalDataProduct(new FileFormatInfo(Format.SPSS));
-                ans+=" doc created";
+            System.out.println("PARSE SPSS MDB, em = "+em);
+            
+            Long socioresearch_key = null;
+            byte [] arr = new byte[(int)length];
+            
 
-                socioresearch_key = createEmptyResearch(dto.getName(),blobkey);
-                answer = addSPSStoSocioResearch(socioresearch_key, s, blobkey,doc2,ans);
 
-        } catch (SPSSFileException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                ans+=e.getMessage();
-        } catch (IOException e) {
-                // TODO Auto-generated catch block
-                ans+=e.getMessage();
-                e.printStackTrace();
+
+
+            RxStoredDTO dto = store.getFileInfo(blobkey);
+            arr = store.getFileContents(blobkey);
+             
+             byte[] buf = new byte[4096];
+            UniversalDetector detector = new UniversalDetector(null);
+            
+            ByteArrayInputStream fis = new ByteArrayInputStream(arr);
+             // (2)
+        int nread;
+        while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+          detector.handleData(buf, 0, nread);
+        }
+        // (3)
+        detector.dataEnd();
+
+        // (4)
+        String encoding = detector.getDetectedCharset();
+        boolean isCP1251 = false;
+        if (encoding != null) {
+          System.out.println("Detected encoding = " + encoding);
+          if(encoding.equals("WINDOWS-1251"))
+              isCP1251 = true;
+        } else {
+          System.out.println("No encoding detected.");
+        }
+            
+            
+            SPSSFile s = new SPSSFile(arr);
+            String st = s.getDDI3DefaultPhysicalDataProductID(new FileFormatInfo(Format.SPSS));
+            String ans = "";
+            String answer = "";
+            ans = "file_cr";
+            ans+= "length = "+arr.length;
+            //ans+="fetch_size = "+String.valueOf(b_serv.MAX_BLOB_FETCH_SIZE)+ " ";
+            byte [] arr_first = new byte[100];
+            for(int i = 0; i < 100;i++)
+            {
+                    arr_first[i] = arr[i];
+            }
+            ans+=new String(arr_first);
+            //s.
+            try {
+                    s.setIsCP1251(isCP1251);
+                    s.loadMetadata();
+                    ans+=" meta_loaded";
+                    s.loadData();
+                    ans+=" data_loaded";
+                    //org.w3c.dom.Document doc1 = s.getDDI3LogicalProduct();
+                    org.w3c.dom.Document doc2 = s.getDDI3PhysicalDataProduct(new FileFormatInfo(Format.SPSS));
+                    ans+=" doc created";
+
+                    socioresearch_key = createEmptyResearch(dto.getName(),blobkey);
+                    answer = addSPSStoSocioResearch(socioresearch_key, s, blobkey,doc2,ans);
+
+            } catch (SPSSFileException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    ans+=e.getMessage();
+            } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    ans+=e.getMessage();
+                    e.printStackTrace();
+            }	
+            //return ans+"  "+socioresearch_key + " : vars :  "+answer;
+            //return socioresearch_key;
+        } catch (IOException ex) {
+                Logger.getLogger(AdminSocioResearchMDB.class.getName()).log(Level.SEVERE, null, ex);
         }	
 	//return ans+"  "+socioresearch_key + " : vars :  "+answer;
 	//return socioresearch_key;

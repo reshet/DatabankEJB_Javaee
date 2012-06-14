@@ -96,6 +96,14 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
         try
         {
             SocioResearch r = em.find(SocioResearch.class, id);
+            ArrayList<Long> r_id = new ArrayList<Long>();
+            r_id.add(r.getID());
+            launchDeleteIndexing(r_id, "research");
+            launchDeleteIndexing(Var.getResearchVarsIDs(em, id), "sociovar");
+            Var.deleteResearchVars(em,id);
+            DatabankStartPage sp = DatabankStartPage.getStartPageSingleton(em);
+            if(sp.getRes().contains(r))sp.getRes().remove(r);
+            em.persist(sp);
             em.remove(r);
             return true;
         }catch(Exception e)
@@ -274,6 +282,34 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
             ex.printStackTrace();
         }
     }
+    
+    
+      private void launchDeleteIndexing(ArrayList<Long> ids,String type)
+    {
+         try {
+            
+//            QueueConnection connection = connectionFactory.createQueueConnection();
+//            QueueSession session = connection.createQueueSession(false, 0);
+//            QueueSender q_sender = session.createSender(queue);
+
+            ObjectMessage message = session.createObjectMessage();
+            message.setStringProperty("title", "command to delete index "+type+" "+ids.size()+" elements");
+            // here we create NewsEntity, that will be sent in JMS message
+           // ParseSpssJob job = new ParseSpssJob(blobkey, length);
+            
+            DeleteIndexiesJob job = new DeleteIndexiesJob(ids, type);
+            message.setObject(job);    
+           // message.setJMSDestination(queue);
+            q_sender.send(message);
+//            q_sender.close();
+//            connection.close();
+            //response.sendRedirect("ListNews");
+
+        } catch (JMSException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     @Override
     public long parseSPSS(long blobkey, long length) {
         

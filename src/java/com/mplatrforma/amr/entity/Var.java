@@ -20,9 +20,11 @@ import javax.persistence.*;
 @Entity
 @NamedQueries({
     @NamedQuery(name = "Var.getResearchVarsLight", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.research_id = :id ORDER BY x.id"),
-    @NamedQuery(name = "Var.getResearchVarsLightIN", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.id IN :idlist ORDER BY x.id")
-
+    @NamedQuery(name = "Var.getResearchVarsLightIN", query = "SELECT NEW com.mresearch.databank.shared.VarDTO_Light(x.id, x.code, x.label) FROM Var x WHERE x.id IN :idlist ORDER BY x.id"),
+    @NamedQuery(name = "Var.deleteList", query = "DELETE FROM Var x WHERE x.research_id = :res_id"),
+    @NamedQuery(name = "Var.getIDsList", query = "SELECT x.id FROM Var x WHERE x.research_id = :res_id ORDER BY x.id")
 })
+
 public class Var {
         @Transient
         private EntityManager em;
@@ -40,7 +42,7 @@ public class Var {
 	private ArrayList<Double> cortage;	
 	private ArrayList<String> cortage_string;
         
-         @OneToOne(cascade= CascadeType.PERSIST)
+         @OneToOne(cascade= CascadeType.ALL)
         private MetaUnitEntityItem entity_item;
         private HashMap<String,String> filling;
 	public HashMap<String, String> getFilling() {
@@ -71,6 +73,23 @@ public class Var {
             q.setParameter("idlist", ids);
             List<VarDTO_Light> l = q.getResultList();
             return new ArrayList<VarDTO_Light>(l);
+        }
+        public static ArrayList<Long> getResearchVarsIDs(EntityManager em,Long id)
+        {
+           
+            TypedQuery<Long> q = em.createNamedQuery("Var.getIDsList", Long.class );
+            q.setParameter("res_id", id);
+            List<Long> l = q.getResultList();
+            return new ArrayList<Long>(l);
+        }
+         public static int deleteResearchVars(EntityManager em,Long id)
+        {
+           
+            Query q = em.createNamedQuery("Var.deleteList");
+            q.setParameter("res_id", id);
+            return q.executeUpdate();
+            //List<VarDTO_Light> l = q.getResultList();
+            //return new ArrayList<VarDTO_Light>(l);
         }
 	public ArrayList<String> getCortage_string() {
 		return cortage_string;

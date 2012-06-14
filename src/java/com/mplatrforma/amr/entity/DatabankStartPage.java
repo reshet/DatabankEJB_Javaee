@@ -28,11 +28,11 @@ public class DatabankStartPage implements Serializable {
     private Long id;
    
     
-    @OneToMany(cascade= CascadeType.ALL)
     @OrderColumn
+    @OneToMany
     private List<SocioResearch> res;
-    @OneToMany(cascade= CascadeType.ALL)
     @OrderColumn
+    @OneToMany
     private List<Zacon> laws;
     
     private Long pubs_last_show;
@@ -52,23 +52,23 @@ public class DatabankStartPage implements Serializable {
     public void updateFromDTO(EntityManager em,StartupBundleDTO rDTO)
 	{
               setPubs_last_show(rDTO.getPubs_last_count());
-              for(Zacon l:laws)
+              for(Zacon l:getLaws())
               {
-                  if(!rDTO.getImportant_laws().contains(l.toDTO_Light()))laws.remove(l);
+                  if(!rDTO.getImportant_laws().contains(l.toDTO_Light()))getLaws().remove(l);
               }
-              for(SocioResearch r:res)
+              for(SocioResearch r:getRes())
               {
-                  if(!rDTO.getTop_researchs().contains(r.toLightDTO()))res.remove(r);
+                  if(!rDTO.getTop_researchs().contains(r.toLightDTO()))getRes().remove(r);
               }
               for(ZaconDTO_Light dto:rDTO.getImportant_laws())
               {
                   Zacon z = em.find(Zacon.class, dto.getID());
-                  laws.add(z);
+                  getLaws().add(z);
               }
               for(SocioResearchDTO_Light dto:rDTO.getTop_researchs())
               {
                   SocioResearch s = em.find(SocioResearch.class, dto.getID());
-                  res.add(s);
+                  getRes().add(s);
               }
               
 	}
@@ -77,11 +77,11 @@ public class DatabankStartPage implements Serializable {
             StartupBundleDTO dto = new StartupBundleDTO();
             ArrayList<SocioResearchDTO_Light> re = new ArrayList<SocioResearchDTO_Light>();
             ArrayList<ZaconDTO_Light> lo = new ArrayList<ZaconDTO_Light>();
-            for(Zacon l:laws)
+            for(Zacon l:getLaws())
             {
                 lo.add(l.toDTO_Light());
             }
-            for(SocioResearch s:res)
+            for(SocioResearch s:getRes())
             {
                 re.add(s.toLightDTO());
             }
@@ -130,5 +130,33 @@ public class DatabankStartPage implements Serializable {
      */
     public void setPubs_last_show(Long pubs_last_show) {
         this.pubs_last_show = pubs_last_show;
+    }
+
+    /**
+     * @return the res
+     */
+    public List<SocioResearch> getRes() {
+        return res;
+    }
+
+    /**
+     * @param res the res to set
+     */
+    public void setRes(List<SocioResearch> res) {
+        this.res = res;
+    }
+
+    /**
+     * @return the laws
+     */
+    public List<Zacon> getLaws() {
+        return laws;
+    }
+
+    /**
+     * @param laws the laws to set
+     */
+    public void setLaws(List<Zacon> laws) {
+        this.laws = laws;
     }
 }

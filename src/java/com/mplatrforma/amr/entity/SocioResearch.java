@@ -17,7 +17,7 @@ public class SocioResearch extends AbstractSearchable{
     
         @Transient
         private EntityManager em;
-        
+      
         @Id
         @GeneratedValue(strategy= GenerationType.AUTO)
 	private long id;

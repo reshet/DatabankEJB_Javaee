@@ -20,6 +20,7 @@
             <included-library dirs="200">file.reference.org.opendatafoundation.data.jar-1</included-library>
             <included-library dirs="200">file.reference.org.opendatafoundation.data.mod.jar-1</included-library>
             <included-library dirs="200">file.reference.elasticsearch-0.19.0.RC3.jar</included-library>
+            <included-library dirs="200">file.reference.juniversalchardet-1.0.3.jar</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
