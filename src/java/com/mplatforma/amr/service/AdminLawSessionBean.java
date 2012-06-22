@@ -6,10 +6,8 @@ package com.mplatforma.amr.service;
 
 import com.mplatforma.amr.service.remote.AdminLawBeanRemote;
 import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
-import com.mplatrforma.amr.entity.Article;
-import com.mplatrforma.amr.entity.SocioResearch;
-import com.mplatrforma.amr.entity.Var;
-import com.mplatrforma.amr.entity.Zacon;
+import com.mplatrforma.amr.entity.*;
+import com.mresearch.databank.jobs.DeleteIndexiesJob;
 import com.mresearch.databank.jobs.IndexLawJobFast;
 import com.mresearch.databank.shared.ArticleDTO;
 import com.mresearch.databank.shared.ConsultationDTO;
@@ -175,13 +173,48 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
             ex.printStackTrace();
         }
     }
+
+         private void launchDeleteIndexing(ArrayList<Long> ids,String type)
+         {
+         try {
+            
+//            QueueConnection connection = connectionFactory.createQueueConnection();
+//            QueueSession session = connection.createQueueSession(false, 0);
+//            QueueSender q_sender = session.createSender(queue);
+
+            ObjectMessage message = session.createObjectMessage();
+            message.setStringProperty("title", "command to delete index "+type+" "+ids.size()+" elements");
+            // here we create NewsEntity, that will be sent in JMS message
+           // ParseSpssJob job = new ParseSpssJob(blobkey, length);
+            
+            DeleteIndexiesJob job = new DeleteIndexiesJob(ids, type);
+            message.setObject(job);    
+           // message.setJMSDestination(queue);
+            q_sender.send(message);
+//            q_sender.close();
+//            connection.close();
+            //response.sendRedirect("ListNews");
+
+        } catch (JMSException ex) {
+            ex.printStackTrace();
+        }
+    }
     
         @Override
     public Boolean deleteZacon(Long id) {
 	try {
         Zacon zacon = em.find(Zacon.class, id);
         if (zacon != null) {
+            ArrayList<Long> r_id = new ArrayList<Long>();
+            r_id.add(zacon.getId());
+            launchDeleteIndexing(r_id, "law");
+            
+             DatabankStartPage sp = DatabankStartPage.getStartPageSingleton(em);
+            if(sp.getLaws().contains(zacon))sp.getLaws().remove(zacon);
+            em.persist(sp);
             em.remove(zacon);
+           
+        
         }
         } finally {
         }

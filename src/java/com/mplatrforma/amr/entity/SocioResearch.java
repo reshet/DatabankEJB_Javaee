@@ -2,7 +2,6 @@ package com.mplatrforma.amr.entity;
 
 import com.mresearch.databank.shared.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 import java.util.List;
 import javax.persistence.*;
@@ -264,7 +263,7 @@ public class SocioResearch extends AbstractSearchable{
 		if (getSearchRepresenter(id_search_repres,em).getEntity_id() == 0) updateEntityID(id, id_search_repres,em);
 		//this.setName(rDTO.getName());
 		
-		this.setSelection_size(rDTO.getSelection_size());
+		//this.setSelection_size(rDTO.getSelection_size());
                  this.description_text = rDTO.getDesctiption();
 		//this.var_ids = rDTO.getVar_ids();
 		

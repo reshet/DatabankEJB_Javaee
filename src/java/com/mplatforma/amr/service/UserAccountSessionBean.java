@@ -11,6 +11,7 @@ import com.mresearch.databank.shared.PublicationDTO_Light;
 import com.mresearch.databank.shared.StartupBundleDTO;
 import com.mresearch.databank.shared.UserAccountDTO;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -45,6 +46,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
        //createDefaultDatabankLawStructure();
        // initDefaults();
        // createDefaultStartPage();
+       // script();
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
     } 
     
@@ -356,4 +358,21 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
         return dto;
     }
     
+    private void script()
+    {
+          DatabankStructure db = em.find(DatabankStructure.class,"socioresearch");
+         
+          Collection<MetaUnit> items = db.getRoot().getSub_meta_units();
+          
+          ArrayList<MetaUnitEntityItem> selection_randomity = new ArrayList<MetaUnitEntityItem>();
+          
+          MetaUnitMultivaluedEntity randomity = new MetaUnitMultivaluedEntity("concepts","Концепты", 1);
+          
+          selection_randomity.add(new MetaUnitEntityItem("образование"));
+          
+          randomity.setItems(selection_randomity);
+          items.add(randomity);
+          
+          em.persist(db);
+    }
 }

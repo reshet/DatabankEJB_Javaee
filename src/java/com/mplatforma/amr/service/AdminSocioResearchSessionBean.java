@@ -285,7 +285,7 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
     
     
       private void launchDeleteIndexing(ArrayList<Long> ids,String type)
-    {
+         {
          try {
             
 //            QueueConnection connection = connectionFactory.createQueueConnection();

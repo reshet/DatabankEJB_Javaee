@@ -202,9 +202,10 @@ public class AdminSocioResearchMDB implements MessageListener {
             {
                 indecies[i++]=String.valueOf(ind);
             }
-            DeleteByQueryRequest req = new DeleteByQueryRequest().types(type).indices(indecies);
-           DeleteByQueryResponse resp = client.prepareDeleteByQuery(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
-            System.out.println(resp.toString());
+            //DeleteByQueryRequest req = new DeleteByQueryRequest().types(type).indices(indecies);
+        //   DeleteByQueryResponse resp = client.prepareDeleteByQuery(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
+            DeleteByQueryResponse resp = client.prepareDeleteByQuery("databank").setTypes(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
+           System.out.println(resp.toString());
             
         } catch (Exception ex) {
             Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
@@ -448,7 +449,7 @@ public class AdminSocioResearchMDB implements MessageListener {
     {
         try {
             Client client = node.client();
-            IndexResponse response = client.prepareIndex("databank", "consultxation",String.valueOf(dto.getId()))
+            IndexResponse response = client.prepareIndex("databank", "consultation",String.valueOf(dto.getId()))
             .setSource(dto.getJson_desctiptor())
             .execute()
             .actionGet();

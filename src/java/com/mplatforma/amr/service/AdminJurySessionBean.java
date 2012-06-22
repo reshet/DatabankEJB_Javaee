@@ -8,10 +8,8 @@ import com.mplatforma.amr.service.remote.AdminLawBeanRemote;
 import com.mplatforma.amr.service.remote.AdminJuryBeanRemote;
 import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
 import com.mplatforma.amr.service.remote.UserSocioResearchBeanRemote;
-import com.mplatrforma.amr.entity.Article;
-import com.mplatrforma.amr.entity.SocioResearch;
-import com.mplatrforma.amr.entity.Var;
-import com.mplatrforma.amr.entity.Consultation;
+import com.mplatrforma.amr.entity.*;
+import com.mresearch.databank.jobs.DeleteIndexiesJob;
 import com.mresearch.databank.jobs.IndexLawJobFast;
 import com.mresearch.databank.jobs.IndexJuryJobFast;
 import com.mresearch.databank.shared.*;
@@ -71,6 +69,7 @@ public class AdminJurySessionBean implements AdminJuryBeanRemote{
         }
     }
     
+    
     @PreDestroy
     private void release()
     {
@@ -96,13 +95,44 @@ public class AdminJurySessionBean implements AdminJuryBeanRemote{
             ex.printStackTrace();
         }
     }
+         private void launchDeleteIndexing(ArrayList<Long> ids,String type)
+         {
+         try {
+            
+//            QueueConnection connection = connectionFactory.createQueueConnection();
+//            QueueSession session = connection.createQueueSession(false, 0);
+//            QueueSender q_sender = session.createSender(queue);
+
+            ObjectMessage message = session.createObjectMessage();
+            message.setStringProperty("title", "command to delete index "+type+" "+ids.size()+" elements");
+            // here we create NewsEntity, that will be sent in JMS message
+           // ParseSpssJob job = new ParseSpssJob(blobkey, length);
+            
+            DeleteIndexiesJob job = new DeleteIndexiesJob(ids, type);
+            message.setObject(job);    
+           // message.setJMSDestination(queue);
+            q_sender.send(message);
+//            q_sender.close();
+//            connection.close();
+            //response.sendRedirect("ListNews");
+
+        } catch (JMSException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     
         @Override
     public Boolean deleteConsultation(Long id) {
 	try {
         Consultation Consultation = em.find(Consultation.class, id);
         if (Consultation != null) {
+            ArrayList<Long> r_id = new ArrayList<Long>();
+            r_id.add(Consultation.getId());
+           launchDeleteIndexing(r_id, "consultation");
             em.remove(Consultation);
+           
+            
         }
         } finally {
         }
