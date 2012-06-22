@@ -28,6 +28,9 @@ import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.opendatafoundation.data.FileFormatInfo;
@@ -182,30 +185,28 @@ public class AdminSocioResearchMDB implements MessageListener {
        
             
             Client client = node.client();
-
-    // on shutdown
-
+            BulkRequestBuilder bulkRequest = client.prepareBulk();
            
-//            IndexResponse response = client.prepareIndex("twitter", "tweet")
-//            .setSource(jsonBuilder()
-//                        .startObject()
-//                            .field("user", "kimchy")
-//                            .field("postDate", new Date())
-//                            .field("message", "trying out Elastic Search")
-//                        .endObject()
-//                      )
-//            .execute()
-//            .actionGet();
             String [] indecies = new String [ids.size()];
             int i = 0;
             for(Long ind:ids)
             {
                 indecies[i++]=String.valueOf(ind);
+//            DeleteResponse response = client.prepareDelete("databank", type, String.valueOf(ind)) 
+//             .execute() 
+//              .actionGet(); 
+                bulkRequest.add(client.prepareDelete("databank", type, String.valueOf(ind)));
+            
             }
+            
             //DeleteByQueryRequest req = new DeleteByQueryRequest().types(type).indices(indecies);
         //   DeleteByQueryResponse resp = client.prepareDeleteByQuery(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
-            DeleteByQueryResponse resp = client.prepareDeleteByQuery("databank").setTypes(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
-           System.out.println(resp.toString());
+            
+            //DeleteByQueryResponse resp = client.prepareDeleteByQuery("databank").setTypes(type).setQuery(QueryBuilders.idsQuery(indecies)).execute().actionGet();
+          
+           // System.out.println(resp.toString());
+            BulkResponse resp = bulkRequest.execute().actionGet();
+            System.out.println(resp.toString());
             
         } catch (Exception ex) {
             Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
@@ -306,6 +307,39 @@ public class AdminSocioResearchMDB implements MessageListener {
         } catch (JMSException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    private ArrayList<VarDTO_Detailed> vars_waiting_indexing;
+    private void launchIndexingVarBULKED(VarDTO_Detailed dto)
+    {
+         vars_waiting_indexing.add(dto);
+    }
+    private void perform_var_bulk_indexing()
+    {
+        try {
+             if(vars_waiting_indexing!=null)
+             {
+                Client client = node.client();
+                BulkRequestBuilder bulkRequest = client.prepareBulk();
+                for(VarDTO_Detailed dto:vars_waiting_indexing)
+                {
+                    bulkRequest.add(client.prepareIndex("databank", "sociovar",String.valueOf(dto.getId()))
+                    .setSource(generateVarJSONDesc(dto)));
+                }
+                BulkResponse resp = bulkRequest.execute().actionGet();
+                System.out.println("Indexed vars count:"+resp.items().length+" ,takes time:"+resp.getTook().toString());
+                vars_waiting_indexing = null;
+           }
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally
+        {
+            // node.close();
+        }
+
+         
     }
     
     private String generateVarJSONDesc(VarDTO dto)
@@ -568,6 +602,7 @@ public class AdminSocioResearchMDB implements MessageListener {
     {
             String ans1 = "";
             ArrayList<Long> var_ids = new ArrayList<Long>();
+            vars_waiting_indexing = new ArrayList<VarDTO_Detailed>(100);
             for(int i = 0; i < spss.getVariableCount();i++)
             {
                 System.out.println(i);
@@ -588,7 +623,7 @@ public class AdminSocioResearchMDB implements MessageListener {
                     ans1+=s_key;
                     var_ids.add(s_key);
             }
-
+        perform_var_bulk_indexing();
         SocioResearch dsResearch;
         try {
           dsResearch = em.find(SocioResearch.class, socioresearch_id);
@@ -701,7 +736,9 @@ private long createVar(SPSSVariable s_var,long research_id)
       //var.setV_label_map(map);
       em.persist(var);
       var_id = var.getID();
-      launchIndexingVar(var_id);
+      VarDTO_Detailed ddto = var.toDTO_Detailed(null, em);
+      launchIndexingVarBULKED(ddto);
+      //launchIndexingVar(var_id);
 //     }  catch (UnsupportedEncodingException ex) {
 //            Logger.getLogger(AdminSocioResearchSessionBean.class.getName()).log(Level.SEVERE, null, ex);
 //        } finally {
