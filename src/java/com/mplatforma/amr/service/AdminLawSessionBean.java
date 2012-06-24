@@ -9,10 +9,7 @@ import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
 import com.mplatrforma.amr.entity.*;
 import com.mresearch.databank.jobs.DeleteIndexiesJob;
 import com.mresearch.databank.jobs.IndexLawJobFast;
-import com.mresearch.databank.shared.ArticleDTO;
-import com.mresearch.databank.shared.ConsultationDTO;
-import com.mresearch.databank.shared.ZaconDTO;
-import com.mresearch.databank.shared.ZaconDTO_Light;
+import com.mresearch.databank.shared.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -27,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
 
 /**
  *
@@ -259,7 +257,7 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
 	      Zacon = em.find(Zacon.class, aDTO.getId());
 	      Zacon.setName(aDTO.getHeader());
 	      Zacon.setContents(aDTO.getContents());
-	      Zacon.setEnclosure_key(aDTO.getEnclosure_key());
+	     /// Zacon.setEnclosure_key(aDTO.getEnclosure_key());
               
               em.persist(Zacon);
               launchIndexingLaw(aDTO);
@@ -311,7 +309,7 @@ private Zacon addZacon(ZaconDTO ZaconDTO) {
     // for this version of the app, just get hardwired 'default' user
     //UserAccount currentUser = UserAccount.getDefaultUser(); // detached object
     //currentUser = pm.makePersistent(currentUser); // attach
-      Zacon = new Zacon(ZaconDTO);
+      Zacon = new Zacon(ZaconDTO,em);
       em.persist(Zacon);
       ZaconDTO dto = Zacon.toDTO();
       dto.setJson_desctiptor(ZaconDTO.getJson_desctiptor());
@@ -335,5 +333,64 @@ private Zacon addZacon(ZaconDTO ZaconDTO) {
     }
 
    
+     @Override
+    public Boolean addFileToAccessor(long id_research, long id_file, String desc, String category) {
+	    Zacon ds;
+            try {
+	      ds = em.find(Zacon.class, id_research);
+	      ResearchFilesDTO dto = ds.toFilesDTO(em);
+	      dto.addFile(category, desc, id_file);
+	      ds.updateFileAccessor(em,dto);
+	    } finally {
+	    }
+	 return true;
+    }
+
+    @Override
+    public Boolean deleteFileFromAccessor(long id_research, long id_file) {
+	    SocioResearch dsResearch, detached;
+	    try {
+	      dsResearch = em.find(SocioResearch.class, id_research);
+	      ResearchFilesDTO dto = dsResearch.toFilesDTO(em);
+	      dto.deleteFile(id_file);
+	      dsResearch.updateFileAccessor(em,dto);
+	      return store.deleteFile(id_file);
+	    } finally {
+                return false;
+	    }
+    }
+
+    @Override
+    public SocioResearchFilesDTO getFilesInCategory(long research_id, String category) {
+        Zacon ds;
+        ResearchFilesDTO dto;
+        SocioResearchFilesDTO dto2;
+        try {
+          ds = em.find(Zacon.class, research_id);
+          //dsResearch.addFile(id_file, desc);
+          dto = ds.toFilesDTO(em);
+          dto2 = new SocioResearchFilesDTO();
+          dto2.setFiles_ids(dto.getFileIds(category));
+          dto2.setFiles_descs(dto.getFileNames(category));
+        } finally {
+        }
+        return dto2;
+    }
+
+    @Override
+    public Boolean updateFileAccessor(long research_id, ResearchFilesDTO dto) {
+         Zacon research = null;
+        ResearchFilesAccessor accessor;
+        try {
+          research = em.find(Zacon.class, research_id);
+          accessor = em.find(ResearchFilesAccessor.class,research.getFile_accessor_id());
+          accessor.updateFromDTO(dto);
+          return true;
+        } catch (Exception e) {
+              e.printStackTrace();
+        } finally {
+            return false;
+        }
+    }
 
 }

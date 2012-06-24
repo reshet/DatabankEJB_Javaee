@@ -21,15 +21,15 @@ public class ResearchFilesDTO implements Serializable{
 		this.file_names = file_names;
 	}
 
-	public static String CG_publications = "CG_publications";
-	public static String CG_tables = "CG_tables";
-	public static String CG_questionaries = "CG_questionaries";
-	public static String CG_questionary_cards = "CG_questionary_cards";
-	public static String CG_protocols = "CG_protocols";
-	public static String CG_instructions = "CG_instructions";
-	public static String CG_analytic_reports = "CG_analytic_reports";
-	public static String CG_technical_reports = "CG_technical_reports";
-	public static String CG_metadata = "CG_metadata";
+//	public static String CG_publications = "CG_publications";
+//	public static String CG_tables = "CG_tables";
+//	public static String CG_questionaries = "CG_questionaries";
+//	public static String CG_questionary_cards = "CG_questionary_cards";
+//	public static String CG_protocols = "CG_protocols";
+//	public static String CG_instructions = "CG_instructions";
+//	public static String CG_analytic_reports = "CG_analytic_reports";
+//	public static String CG_technical_reports = "CG_technical_reports";
+//	public static String CG_metadata = "CG_metadata";
 	
 	public ResearchFilesDTO(){}
 	public void addFile(String category,String name,Long id)

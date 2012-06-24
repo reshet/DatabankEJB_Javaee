@@ -1,21 +1,19 @@
 package com.mplatrforma.amr.entity;
 
 
+import com.mresearch.databank.shared.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.mresearch.databank.shared.ArticleDTO;
-import com.mresearch.databank.shared.OrgDTO;
-import com.mresearch.databank.shared.ZaconDTO;
-import com.mresearch.databank.shared.ZaconDTO_Light;
 import java.util.List;
+import javax.ejb.TransactionAttribute;
 import javax.persistence.*;
 
 @Entity
 @NamedQueries({
     @NamedQuery(name = "Zacon.getAllLight", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO_Light(x.id, x.name) FROM Zacon x ORDER BY x.id"),
     @NamedQuery(name = "Zacon.getLightIN", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO_Light(x.id, x.name) FROM Zacon x WHERE x.id IN :idlist ORDER BY x.id"),
-    @NamedQuery(name = "Zacon.getFullIN", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO(x.id, x.name,x.contents,x.enclosure_key,y.mapped_values) "
+    @NamedQuery(name = "Zacon.getFullIN", query = "SELECT NEW com.mresearch.databank.shared.ZaconDTO(x.id, x.name,x.contents,x.file_accessor_id,y.mapped_values) "
                                                  + "FROM Zacon x INNER JOIN x.entity_item y"
                                                     + " WHERE x.id IN :idlist ORDER BY x.id")
 
@@ -23,16 +21,25 @@ import javax.persistence.*;
 public class Zacon {
 	@Id
         @GeneratedValue(strategy= GenerationType.AUTO)
-	private Long id;
+        private Long id;
 	private String name;
  	private String number;
         
+        
+        @Transient
+        private EntityManager em;
+	
+        
         @Column(columnDefinition="TEXT")
 	private String contents;
-	private Long enclosure_key;
+	private Long file_accessor_id ;
        
         @OneToOne(cascade= CascadeType.PERSIST)
         private MetaUnitEntityItem entity_item;
+
+    public Zacon() {
+         this.entity_item = new MetaUnitEntityItem("zacon");
+    }
 
 	public String getName() {
 		return name;
@@ -40,25 +47,63 @@ public class Zacon {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Zacon()
+	public Zacon(EntityManager em)
 	{
              this.entity_item = new MetaUnitEntityItem("zacon");
+             this.em = em;
+             createFileAccessor();
         }
-	public Zacon(ZaconDTO dto)
+	public Zacon(ZaconDTO dto,EntityManager em)
 	{
+                this.em = em;
                 this.entity_item = new MetaUnitEntityItem(dto.getHeader());
                 this.entity_item.setMapped_values(dto.getFilling());
                 this.name = dto.getHeader();
 		this.setContents(dto.getContents());
-		this.setEnclosure_key(dto.getEnclosure_key());
+		//this.setEnclosure_key(dto.getEnclosure_key());
 		//this.setDate(dto.getDate());
 		//this.setAccept_date(dto.getAccept_date());
 		//this.setDecline_date(dto.getDecline_date());
 		//this.setKey_words(dto.getKey_words());
 		this.setNumber(dto.getNumber());
+                createFileAccessor();
+                
 		//this.setAuthors(dto.getAuthors());
 	}	
-        
+        private void createFileAccessor()
+	{
+		ResearchFilesAccessor accessor;
+		try{
+			accessor = new ResearchFilesAccessor();
+			em.persist(accessor);
+			this.file_accessor_id = accessor.getId();
+		}finally
+		{
+			//em.close();
+		}
+	}
+        public void updateFileAccessor(EntityManager em,ResearchFilesDTO dto)
+	{
+		ResearchFilesAccessor accessor;
+		try{
+			accessor = em.find(ResearchFilesAccessor.class, getFile_accessor_id());
+			accessor.updateFromDTO(dto);
+		}finally
+		{
+			//em.close();
+		}
+	}
+        public ResearchFilesDTO toFilesDTO(EntityManager em)
+	{
+	    try {
+	    		ResearchFilesAccessor accessor,detached;
+	    		accessor = em.find(ResearchFilesAccessor.class, getFile_accessor_id());
+	    		//detached = em.detach(accessor);
+	    		return accessor.toDTO();
+	    } finally {
+	     // em.close();
+	    }
+	}
          public static ArrayList<ZaconDTO_Light> getAllZaconLightDTOs(EntityManager em)
         {
             TypedQuery<ZaconDTO_Light> q = em.createNamedQuery("Zacon.getAllLight", ZaconDTO_Light.class);
@@ -86,19 +131,20 @@ public class Zacon {
                 this.name = rDTO.getHeader();
                 this.contents = rDTO.getContents();
                 this.number = rDTO.getNumber();
-                this.enclosure_key = rDTO.getEnclosure_key();
+                //this.enclosure_key = rDTO.getEnclosure_key();
 	}
 	public ZaconDTO toDTO()
 	{
 		ZaconDTO dto = new ZaconDTO(id,name,getContents());
 		dto.setId(this.getId());
-		dto.setEnclosure_key(getEnclosure_key());
+		//dto.setEnclosure_key(getEnclosure_key());
 		//dto.setDate(date);
 		//dto.setAccept_date(accept_date);
 		//dto.setDecline_date(decline_date);
 		//dto.setKey_words(key_words);
 		dto.setNumber(number);
                 dto.setFilling(entity_item.getMapped_values());
+                dto.setFile_accessor_id(getFile_accessor_id());
 		//dto.setAuthors(authors);
 		return dto;
 	}
@@ -125,12 +171,12 @@ public class Zacon {
 	public void setContents(String contents) {
 		this.contents = contents;
 	}
-	public Long getEnclosure_key() {
-		return enclosure_key;
-	}
-	public void setEnclosure_key(Long enclosure_key) {
-		this.enclosure_key = enclosure_key;
-	}
+//	public Long getEnclosure_key() {
+//		return enclosure_key;
+//	}
+//	public void setEnclosure_key(Long enclosure_key) {
+//		this.enclosure_key = enclosure_key;
+//	}
 //	public Date getDate() {
 //		return date;
 //	}
@@ -167,4 +213,11 @@ public class Zacon {
 //	public void setAuthors(ArrayList<String> authors) {
 //		this.authors = authors;
 //	}
+
+    /**
+     * @return the file_accessor_id
+     */
+    public Long getFile_accessor_id() {
+        return file_accessor_id;
+    }
 }

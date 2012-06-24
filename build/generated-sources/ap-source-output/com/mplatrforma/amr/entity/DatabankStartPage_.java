@@ -7,7 +7,7 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.3.0.v20110604-r9504", date="2012-06-24T17:55:55")
+@Generated(value="EclipseLink-2.3.0.v20110604-r9504", date="2012-06-24T19:25:00")
 @StaticMetamodel(DatabankStartPage.class)
 public class DatabankStartPage_ { 
 
