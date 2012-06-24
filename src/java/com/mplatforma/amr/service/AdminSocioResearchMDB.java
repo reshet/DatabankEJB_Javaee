@@ -27,12 +27,8 @@ import javax.ejb.MessageDrivenContext;
 import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.opendatafoundation.data.FileFormatInfo;
 import org.opendatafoundation.data.FileFormatInfo.Format;
 import org.opendatafoundation.data.mod.SPSSFile;
@@ -43,8 +39,6 @@ import org.opendatafoundation.data.mod.SPSSVariable;
 import org.w3c.dom.Document;
 import org.elasticsearch.action.index.IndexResponse;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 
 import static org.elasticsearch.node.NodeBuilder.*;
@@ -309,8 +303,8 @@ public class AdminSocioResearchMDB implements MessageListener {
         }
     }
     
-    private ArrayList<VarDTO_Detailed> vars_waiting_indexing;
-    private void launchIndexingVarBULKED(VarDTO_Detailed dto)
+    private ArrayList<VarDTO> vars_waiting_indexing;
+    private void launchIndexingVarBULKED(VarDTO dto)
     {
          vars_waiting_indexing.add(dto);
     }
@@ -321,7 +315,7 @@ public class AdminSocioResearchMDB implements MessageListener {
              {
                 Client client = node.client();
                 BulkRequestBuilder bulkRequest = client.prepareBulk();
-                for(VarDTO_Detailed dto:vars_waiting_indexing)
+                for(VarDTO dto:vars_waiting_indexing)
                 {
                     bulkRequest.add(client.prepareIndex("databank", "sociovar",String.valueOf(dto.getId()))
                     .setSource(generateVarJSONDesc(dto)));
@@ -602,7 +596,7 @@ public class AdminSocioResearchMDB implements MessageListener {
     {
             String ans1 = "";
             ArrayList<Long> var_ids = new ArrayList<Long>();
-            vars_waiting_indexing = new ArrayList<VarDTO_Detailed>(100);
+            vars_waiting_indexing = new ArrayList<VarDTO>(100);
             for(int i = 0; i < spss.getVariableCount();i++)
             {
                 System.out.println(i);
@@ -736,7 +730,7 @@ private long createVar(SPSSVariable s_var,long research_id)
       //var.setV_label_map(map);
       em.persist(var);
       var_id = var.getID();
-      VarDTO_Detailed ddto = var.toDTO_Detailed(null, em);
+      VarDTO ddto = var.toDTO(null,em);
       launchIndexingVarBULKED(ddto);
       //launchIndexingVar(var_id);
 //     }  catch (UnsupportedEncodingException ex) {

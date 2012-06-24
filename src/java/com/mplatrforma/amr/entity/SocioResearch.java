@@ -120,6 +120,7 @@ public class SocioResearch extends AbstractSearchable{
                 this.description_text= rDTO.getDesctiption();
 	        this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
+                this.json_desctiptor = rDTO.getJson_descriptor();
                // this.entity_item.getMapped_values().put(SocioResearch.SEL_SIZE_NAME, String.valueof(rDTO.se));
 		//updateEntityRepresent(id_search_repres, name,em);
 		//if (vars_tagcloud_created==0)generateVarsTagCloud();
@@ -212,6 +213,7 @@ public class SocioResearch extends AbstractSearchable{
 		dto.setVar_weight_name(getVar_weight_name());
                 dto.setDesctiption(this.description_text);
 		dto.setFile_accessor_id(this.file_accessor_id);
+                dto.setJson_descriptor(json_desctiptor);
                 if(this.entity_item!=null && this.entity_item.getMapped_values()!=null)
                         dto.setFilling(this.entity_item.getMapped_values());
                 
@@ -251,6 +253,7 @@ public class SocioResearch extends AbstractSearchable{
                 this.description_text = rDTO.getDesctiption();
 		if(this.entity_item == null) this.entity_item = new MetaUnitEntityItem(rDTO.getName());
                 this.entity_item.setMapped_values(rDTO.getFilling());
+                this.json_desctiptor = rDTO.getJson_descriptor();
 		//updateEntityRepresent(id_search_repres, name,em);
 		//if (vars_tagcloud_created==0)generateVarsTagCloud();
 		//this.org_prompter =rDTO.getOrg_prompter();
