@@ -548,6 +548,7 @@ public class AdminSocioResearchMDB implements MessageListener {
                     s.setIsCP1251(isCP1251);
                     s.loadMetadata();
                     ans+=" meta_loaded";
+                    s.setIsCP1251(false);
                     s.loadData();
                     ans+=" data_loaded";
                     //org.w3c.dom.Document doc1 = s.getDDI3LogicalProduct();

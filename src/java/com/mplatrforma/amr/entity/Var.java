@@ -161,8 +161,11 @@ public class Var {
 		dto.setV_label_codes(v_label_codes);
 		dto.setV_label_values(v_label_values);
                 dto.setResearch_id(research_id);
-		if (watching_user != null)calcDistribution(watching_user,dto,em);
+                if(var_type.equals(VarDTO_Detailed.alt_var_type))
+                {
+                    if (watching_user != null)calcDistribution(watching_user,dto,em);
 			else dto.setDistribution(calcDistributionSimple());
+                }
 		return dto;
 	}
         public void updateFromDTO(VarDTO_Detailed rDTO,EntityManager em)
@@ -192,15 +195,22 @@ public class Var {
 		dto.setGen_research_names(getGenResearchesNames(generalized_var_ids,em));
 		dto.setGen_research_ids(getGenResearchesIds(generalized_var_ids,em));
 		dto.setVar_type(var_type);
+                
+                SocioResearch r = em.find(SocioResearch.class, research_id);
+                dto.setResearch_name(r.getName());
+                dto.setResearch_id(research_id);
                 if(entity_item!= null)dto.setFilling(entity_item.getMapped_values());
                 if (dto instanceof RealVarDTO_Detailed) 
                 {
                     ((RealVarDTO_Detailed)dto).setFiltered_cortage(this.cortage);
                     ((RealVarDTO_Detailed)dto).calc_statstics();
+                    ((RealVarDTO_Detailed)dto).setNumber_of_records(cortage.size());
+                    
                 }
                 else if(dto instanceof TextVarDTO_Detailed)
                 {
                     ((TextVarDTO_Detailed)dto).setFiltered_cortage(this.cortage_string);
+                    ((TextVarDTO_Detailed)dto).setNumber_of_records(cortage_string.size());
                 }
                 else if (dto instanceof VarDTO_Detailed)
                     if (watching_user != null)calcDistribution(watching_user,dto,em);
@@ -292,7 +302,7 @@ public class Var {
 		//PersistenceManager pm = PMF.get().getPersistenceManager();
 		//UserAccount account = 
 		
-		
+		//if(v_label_codes = null) v_label_codes
 		ArrayList<Double> distr = new ArrayList<Double>(v_label_codes.size());
 		for(int i = 0;i < v_label_codes.size();i++)
 		{

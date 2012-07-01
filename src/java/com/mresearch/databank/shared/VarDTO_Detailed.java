@@ -17,6 +17,7 @@ public class VarDTO_Detailed extends VarDTO implements Serializable{
 	private ArrayList<String> gen_research_names;
 	private ArrayList<Long> gen_research_ids;
 	private HashMap<String,String> filling;
+        private String research_name;
 	public HashMap<String, String> getFilling() {
 		return filling;
 	}
@@ -86,6 +87,20 @@ public class VarDTO_Detailed extends VarDTO implements Serializable{
 	public void setGen_research_ids(ArrayList<Long> gen_research_ids) {
 		this.gen_research_ids = gen_research_ids;
 	}
+
+    /**
+     * @return the research_name
+     */
+    public String getResearch_name() {
+        return research_name;
+    }
+
+    /**
+     * @param research_name the research_name to set
+     */
+    public void setResearch_name(String research_name) {
+        this.research_name = research_name;
+    }
 
 	
 	
