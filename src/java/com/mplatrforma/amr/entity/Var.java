@@ -33,6 +33,8 @@ public class Var {
 	private long id;
 	private long research_id;
 	private String code;
+        
+        @Column(columnDefinition="TEXT")
 	private String label;
 	private String code_schema_id;
 	private String var_type;

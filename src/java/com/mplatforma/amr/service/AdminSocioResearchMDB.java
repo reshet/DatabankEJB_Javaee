@@ -16,9 +16,11 @@ import com.mplatrforma.amr.entity.SocioResearch;
 import com.mplatrforma.amr.entity.Var;
 import com.mresearch.databank.jobs.*;
 import com.mresearch.databank.shared.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -140,7 +142,7 @@ public class AdminSocioResearchMDB implements MessageListener {
     @PostConstruct
     private void init()
     {
-        node = nodeBuilder().client(true).node();
+        node = nodeBuilder().clusterName("elasticsearch_DataBankPrj_Cluster").client(false).node();
         try {
              connection = connectionFactory.createQueueConnection();
              session = connection.createQueueSession(false, 0);
@@ -339,16 +341,18 @@ public class AdminSocioResearchMDB implements MessageListener {
     private String generateVarJSONDesc(VarDTO dto)
     {
          String json = "";
-        try {
+         if (dto!= null)
+         try {
            
-            
+            String [] empt = new String[0];
+             
             json = jsonBuilder()
                             .startObject()
-                                .field("sociovar_ID", dto.getId())
-                                .field("sociovar_code", dto.getCode())
-                                .field("sociovar_name", dto.getLabel())
-                                .array("sociovar_alt_codes",dto.getV_label_codes().toArray())
-                                .array("sociovar_alt_values",dto.getV_label_values().toArray())
+                                .field("sociovar_ID", dto.getId()==0?"":dto.getId())
+                                .field("sociovar_code", dto.getCode()==null?"":dto.getCode())
+                                .field("sociovar_name", dto.getLabel()==null?"":dto.getLabel())
+                                .array("sociovar_alt_codes",dto.getV_label_codes()==null?empt:dto.getV_label_codes().toArray())
+                                .array("sociovar_alt_values",dto.getV_label_values()==null?empt:dto.getV_label_values().toArray())
                             .endObject().string();
             
             return json;
@@ -491,6 +495,94 @@ public class AdminSocioResearchMDB implements MessageListener {
         }
     }
     
+    private byte [] makeSyntax(byte [] arr)
+    {
+            String newName1 = "/home/reshet/spss_conv_files/spss_file_"+new Date()+"_"+"incoming"+".sav";
+            //save file
+            saveFileBytes(arr, newName1);
+        
+            try {
+                // Execute a command without arguments
+                String command = "ls";
+                Process child = Runtime.getRuntime().exec(command);
+                child.waitFor();
+                // Execute a command with an argument
+            } catch (InterruptedException ex) {
+            Logger.getLogger(AdminSocioResearchMDB.class.getName()).log(Level.SEVERE, null, ex);
+              } catch (IOException e) {
+            }
+            //execute syntax
+            
+            //load file
+               String newName2 = "/home/reshet/spss_conv_files/spss_file_"+new Date()+"_"+"utf8_uncompressed"+".sav";
+            byte [] ar = getFileBytes(newName2);
+         
+         return ar;
+    }
+    
+      private byte[] getFileBytes(String path)
+    {
+            File f = new File(path);
+            FileInputStream fin = null;
+            FileChannel ch = null;
+            try {
+                fin = new FileInputStream(f);
+                ch = fin.getChannel();
+                int size = (int) ch.size();
+                MappedByteBuffer buf = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                byte[] bytes = new byte[size];
+                buf.get(bytes);
+                return bytes;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fin != null) {
+                        fin.close();
+                    }
+                    if (ch != null) {
+                        ch.close();
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            return null;
+    }
+      
+        private void saveFileBytes(byte [] arr,String name)
+    {
+            File f = new File(name);
+            FileOutputStream fout = null;
+            FileChannel ch = null;
+            try {
+                fout = new FileOutputStream(f);
+                ch = fout.getChannel();
+                int size = (int) ch.size();
+                MappedByteBuffer buf = ch.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                byte[] bytes = new byte[size];
+                buf.put(arr);
+                //return newName;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fout != null) {
+                        fout.close();
+                    }
+                    if (ch != null) {
+                        ch.close();
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+           // return null;
+    }
     private void parseSPSS(long blobkey,long length)
     {
         try {
@@ -505,6 +597,11 @@ public class AdminSocioResearchMDB implements MessageListener {
 
             RxStoredDTO dto = store.getFileInfo(blobkey);
             arr = store.getFileContents(blobkey);
+            
+            
+            //byte [] arr2 = makeSyntax(arr);
+            //here make syntax
+            
              
              byte[] buf = new byte[4096];
             UniversalDetector detector = new UniversalDetector(null);
@@ -532,39 +629,39 @@ public class AdminSocioResearchMDB implements MessageListener {
             
             SPSSFile s = new SPSSFile(arr);
             String st = s.getDDI3DefaultPhysicalDataProductID(new FileFormatInfo(Format.SPSS));
-            String ans = "";
-            String answer = "";
-            ans = "file_cr";
-            ans+= "length = "+arr.length;
-            //ans+="fetch_size = "+String.valueOf(b_serv.MAX_BLOB_FETCH_SIZE)+ " ";
-            byte [] arr_first = new byte[100];
-            for(int i = 0; i < 100;i++)
-            {
-                    arr_first[i] = arr[i];
-            }
-            ans+=new String(arr_first);
-            //s.
+//            String ans = "";
+//            String answer = "";
+//            ans = "file_cr";
+//            ans+= "length = "+arr.length;
+//            //ans+="fetch_size = "+String.valueOf(b_serv.MAX_BLOB_FETCH_SIZE)+ " ";
+//            byte [] arr_first = new byte[100];
+//            for(int i = 0; i < 100;i++)
+//            {
+//                    arr_first[i] = arr[i];
+//            }
+//            ans+=new String(arr_first);
+//            //s.
             try {
                     s.setIsCP1251(isCP1251);
                     s.loadMetadata();
-                    ans+=" meta_loaded";
+            //        ans+=" meta_loaded";
                     s.setIsCP1251(false);
                     s.loadData();
-                    ans+=" data_loaded";
+            //        ans+=" data_loaded";
                     //org.w3c.dom.Document doc1 = s.getDDI3LogicalProduct();
                     org.w3c.dom.Document doc2 = s.getDDI3PhysicalDataProduct(new FileFormatInfo(Format.SPSS));
-                    ans+=" doc created";
+            //        ans+=" doc created";
 
                     socioresearch_key = createEmptyResearch(dto.getName(),blobkey);
-                    answer = addSPSStoSocioResearch(socioresearch_key, s, blobkey,doc2,ans);
+                    addSPSStoSocioResearch(socioresearch_key, s, blobkey,doc2,"");
 
             } catch (SPSSFileException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    ans+=e.getMessage();
+                    //ans+=e.getMessage();
             } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    ans+=e.getMessage();
+                    //ans+=e.getMessage();
                     e.printStackTrace();
             }	
             //return ans+"  "+socioresearch_key + " : vars :  "+answer;

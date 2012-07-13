@@ -32,7 +32,7 @@ public class ConsultationDTO extends ConsultationDTO_Light{
 	public ConsultationDTO(Long id,String question, String answer,Date date,Date date_ans,Integer isPublished,HashMap<String,String> fill)
 	{
 		super(id,question,date);
-		this.setanswer(answer);
+		this.answer = answer;
 		this.date_ans = date_ans;
 		this.filling = fill;
 		this.isPublished = isPublished;
@@ -41,7 +41,7 @@ public class ConsultationDTO extends ConsultationDTO_Light{
 	
 	
 	
-public String getAnswer() {
+        public String getAnswer() {
 		return answer;
 	}
 
@@ -109,12 +109,4 @@ public String getAnswer() {
 	}
 
 
-	public String getanswer() {
-		return answer;
-	}
-
-
-	public void setanswer(String answer) {
-		this.answer = answer;
-	}
 }

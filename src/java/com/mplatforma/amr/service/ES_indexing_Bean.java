@@ -6,25 +6,12 @@ package com.mplatforma.amr.service;
 
 import com.mplatforma.amr.service.remote.UserSocioResearchBeanRemote;
 import javax.ejb.EJB;
-import org.elasticsearch.action.get.GetResponse;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.elasticsearch.client.Client;
 import com.mresearch.databank.jobs.IndexResearchJob;
-import com.mresearch.databank.shared.SocioResearchDTO;
-import java.util.Date;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.elasticsearch.action.index.IndexResponse;
-import static org.elasticsearch.common.xcontent.XContentFactory.*;
-import org.elasticsearch.node.Node;
-import static org.elasticsearch.node.NodeBuilder.*;
 
 /**
  *
@@ -40,8 +27,8 @@ import static org.elasticsearch.node.NodeBuilder.*;
 //})
 public class ES_indexing_Bean implements MessageListener {
     
-     @PersistenceContext
-    private EntityManager em;
+    // @PersistenceContext
+    //private EntityManager em;
      
     public ES_indexing_Bean() {
     }
@@ -49,27 +36,27 @@ public class ES_indexing_Bean implements MessageListener {
     @Override
     public void onMessage(Message message) {
         
-         ObjectMessage msg = null;
-        try {
-            if (message instanceof ObjectMessage) {
-                msg = (ObjectMessage) message;
-                System.out.println(msg.getStringProperty("title"));
-                Object obj = msg.getObject();
-                if (obj instanceof IndexResearchJob)
-                {
-                    IndexResearchJob job = (IndexResearchJob)obj;
-                    perform_indexing(job.getId_Research());         
-                }else
-                {
-                    //message.
-                }
-            }
-
-        } catch (Throwable te) {
-            te.printStackTrace();
-        }
+//         ObjectMessage msg = null;
+//        try {
+//            if (message instanceof ObjectMessage) {
+//                msg = (ObjectMessage) message;
+//                System.out.println(msg.getStringProperty("title"));
+//                Object obj = msg.getObject();
+//                if (obj instanceof IndexResearchJob)
+//                {
+//                    IndexResearchJob job = (IndexResearchJob)obj;
+//                    perform_indexing(job.getId_Research());         
+//                }else
+//                {
+//                    //message.
+//                }
+//            }
+//
+//        } catch (Throwable te) {
+//            te.printStackTrace();
+//        }
     }
-    @EJB UserSocioResearchBeanRemote U_bean;
+    //@EJB UserSocioResearchBeanRemote U_bean;
    
     private void perform_indexing(long id_research)
     {

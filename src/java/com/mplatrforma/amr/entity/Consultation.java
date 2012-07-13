@@ -47,7 +47,7 @@ public class Consultation {
                 this.entity_item = new MetaUnitEntityItem(dto.getquestion());
                 this.entity_item.setMapped_values(dto.getFilling());
 		this.question = dto.getquestion();
-                this.answer = dto.getanswer();
+                this.answer = dto.getAnswer();
                 this.published = dto.getIsPublished();
                 this.date_ask = new Date();
 	}	

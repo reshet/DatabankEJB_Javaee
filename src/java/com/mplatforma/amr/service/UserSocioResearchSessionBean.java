@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -24,6 +26,10 @@ import javax.persistence.TypedQuery;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
@@ -317,7 +323,7 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     @PostConstruct
     private void init()
     {
-        node = nodeBuilder().client(true).node();
+        node = nodeBuilder().clusterName("elasticsearch_DataBankPrj_Cluster").client(true).node();
     }
     
     @PreDestroy
@@ -347,8 +353,14 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
                     .includeLower(true)
                     .includeUpper(false)
                 );
-            Client client = node.client();
+    
             
+            Client client = node.client();
+//            Settings settings = ImmutableSettings.settingsBuilder()
+//                .put("cluster.name", "elasticsearch_DataBankPrj_Cluster").build();
+//             Client client = new TransportClient(settings)
+//                .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+
             
             SearchResponse response = client.prepareSearch("databank").setTypes(types_to_search)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -359,15 +371,19 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
                  .execute()
                 .actionGet();
             
-            String ss =  client.prepareSearch("databank").setTypes(types_to_search)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(json_query)
-                .setExplain(true)
-                //.setHighlighterEncoder("\"fields\" : {\"_all\" : {}}")
-                .addHighlightedField("_all")
-                    .toString();
+//            String ss =  client.prepareSearch("databank").setTypes(types_to_search)
+//                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+//                .setQuery(json_query)
+//                .setExplain(true)
+//                //.setHighlighterEncoder("\"fields\" : {\"_all\" : {}}")
+//                .addHighlightedField("_all")
+//                    .toString();
             int b = 2;
            // String s = response.hits().getAt(0).getHighlightFields().toString();
+            
+            Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "SearchQuery:"+json_query);
+            Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "SearchAnswer:"+response.getHits().hits().toString());
+            
             return response.toString();
             
         }
@@ -545,6 +561,19 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
             }
         return subitems;
     }    
+    
+    private void getRecursiveItemsFlattened(ArrayList<String> names,ArrayList<Long> ids,MetaUnitEntityItem ite,String shift)
+    {
+        if(ite.getSubitems()!=null && ite.getSubitems().size()>0)
+        for(MetaUnitEntityItem item:ite.getSubitems())
+        {
+            names.add(shift+item.getValue());
+            ids.add(item.getId());
+            getRecursiveItemsFlattened(names, ids, item,". "+shift);
+        }
+    }
+            
+    
     private MetaUnitMultivaluedEntityDTO toMultivaluedEntityDTO(MetaUnitMultivaluedEntity m,boolean flattened_items)
     {
         MetaUnitMultivaluedEntityDTO dto = new MetaUnitMultivaluedEntityDTO();
@@ -563,14 +592,14 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
             {
                 names.add(item.getValue());
                 ids.add(item.getId());
-                if(item.getSubitems()!=null && item.getSubitems().size()>0 && flattened_items)
-                {
-                    for(MetaUnitEntityItem it:item.getSubitems())
-                    {
-                        names.add(".  "+it.getValue());
-                        ids.add(it.getId());
-                    }
-                }
+                if(flattened_items)getRecursiveItemsFlattened(names, ids, item, ".  ");
+//                {
+//                    for(MetaUnitEntityItem it:item.getSubitems())
+//                    {
+//                        names.add(".  "+it.getValue());
+//                        ids.add(it.getId());
+//                    }
+//                }
             }
             dto.setItem_ids(ids);
             dto.setItem_names(names);
