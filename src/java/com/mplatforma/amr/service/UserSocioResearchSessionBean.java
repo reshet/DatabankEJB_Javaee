@@ -383,6 +383,7 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
             
             Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "SearchQuery:"+json_query);
             Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "SearchAnswer:"+response.getHits().hits().toString());
+            Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "SearchAnswerDet:"+response.toString());
             
             return response.toString();
             
@@ -592,7 +593,7 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
             {
                 names.add(item.getValue());
                 ids.add(item.getId());
-                if(flattened_items)getRecursiveItemsFlattened(names, ids, item, ".  ");
+                if(flattened_items)getRecursiveItemsFlattened(names, ids, item, ". ");
 //                {
 //                    for(MetaUnitEntityItem it:item.getSubitems())
 //                    {

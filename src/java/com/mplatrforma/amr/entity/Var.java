@@ -15,6 +15,8 @@ import com.mresearch.databank.shared.VarDTO;
 import com.mresearch.databank.shared.VarDTO_Detailed;
 import com.mresearch.databank.shared.VarDTO_Light;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.*;
 
 @Entity
@@ -202,6 +204,8 @@ public class Var {
                 dto.setResearch_name(r.getName());
                 dto.setResearch_id(research_id);
                 if(entity_item!= null)dto.setFilling(entity_item.getMapped_values());
+                if(r.getEntity_item()!= null)dto.setResearch_meta_filling(r.getEntity_item().getMapped_values());
+                
                 if (dto instanceof RealVarDTO_Detailed) 
                 {
                     ((RealVarDTO_Detailed)dto).setFiltered_cortage(this.cortage);
@@ -574,6 +578,13 @@ public class Var {
 	
 	public static ArrayList<Double> calc2DDistribution(long var1_id, long var2_id, UserAccountDTO watching_user,EntityManager em)
 	{
+            
+            Logger.getLogger(Var.class.getName()).log(Level.INFO, "Start Calc 2DD distribution");
+            long t1 = System.currentTimeMillis();
+            
+
+            
+            
 		ArrayList<Double> distr = new ArrayList<Double>();
 		
 	    Var dsVar1,dsVar2;
@@ -587,7 +598,7 @@ public class Var {
 	    } finally {
 	      ////em.close();
 	    }
-	    
+	    if(!dsVar1.var_type.equals(VarDTO_Detailed.alt_var_type)||!dsVar2.var_type.equals(VarDTO_Detailed.alt_var_type)) return new ArrayList<Double>();
 	    ArrayList<Integer> initial_filters_usage = new ArrayList<Integer>();
 	    if(watching_user.getFilters_usage(dsVar1.getResearch_id()).size()>0)
 	    for(Integer use:watching_user.getFilters_usage(dsVar1.getResearch_id()))
@@ -644,7 +655,11 @@ public class Var {
      	watching_user.setFilters_usage(initial_filters_usage, dsVar1.getResearch_id());
  	   //watching_user.getF
 		//here make real 2DD
-		return distr;
+	Logger.getLogger(Var.class.getName()).log(Level.INFO, "END Calc 2DD distribution");
+            long t2 = System.currentTimeMillis();
+        Logger.getLogger(Var.class.getName()).log(Level.INFO, "Calc time spent: "+(t2-t1)+" ms.");
+                
+        return distr;
 	}
 	
 	public ArrayList<Double> getV_label_codes() {

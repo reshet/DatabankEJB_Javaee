@@ -173,10 +173,10 @@ public class AdminPubSessionBean implements AdminPubBeanRemote{
 	    Publication Publication = null;
 	    try {
 	      Publication = em.find(Publication.class, aDTO.getId());
-	      Publication.setName(aDTO.getHeader());
-	      Publication.setContents(aDTO.getContents());
-	      Publication.setEnclosure_key(aDTO.getEnclosure_key());
-              
+	      //Publication.setName(aDTO.getHeader());
+	      //Publication.setContents(aDTO.getContents());
+	      //Publication.setEnclosure_key(aDTO.getEnclosure_key());
+              Publication.updateFromDTO(aDTO);
               em.persist(Publication);
               launchIndexingPub(aDTO);
 	    } catch (Exception e) {

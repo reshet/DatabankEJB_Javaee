@@ -255,8 +255,10 @@ public class AdminLawSessionBean implements AdminLawBeanRemote{
 	    Zacon Zacon = null;
 	    try {
 	      Zacon = em.find(Zacon.class, aDTO.getId());
-	      Zacon.setName(aDTO.getHeader());
-	      Zacon.setContents(aDTO.getContents());
+	     // Zacon.setName(aDTO.getHeader());
+	      //Zacon.setContents(aDTO.getContents());
+              Zacon.updateFromDTO(aDTO);
+            
 	     /// Zacon.setEnclosure_key(aDTO.getEnclosure_key());
               
               em.persist(Zacon);

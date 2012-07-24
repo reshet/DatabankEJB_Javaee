@@ -267,6 +267,7 @@ public class AdminSocioResearchMDB implements MessageListener {
             .execute()
             .actionGet();
 
+            Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "IndexQueryDoc:"+dto.getJson_descriptor());
 //            GetResponse response2 = client.prepareGet("twitter", "tweet", "1")
 //                 .execute()
 //                 .actionGet();
@@ -451,6 +452,7 @@ public class AdminSocioResearchMDB implements MessageListener {
 //                 .actionGet();
             
             System.out.println(response.toString());
+                 Logger.getLogger(UserSocioResearchSessionBean.class.getName()).log(Level.INFO, "IndexQueryDoc:"+dto.getJson_desctiptor());
             
         } catch (Exception ex) {
             Logger.getLogger(ES_indexing_Bean.class.getName()).log(Level.SEVERE, null, ex);

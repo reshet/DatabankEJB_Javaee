@@ -16,10 +16,19 @@ public class VarDTO_Detailed extends VarDTO implements Serializable{
 	private ArrayList<String> gen_var_names;
 	private ArrayList<String> gen_research_names;
 	private ArrayList<Long> gen_research_ids;
-	private HashMap<String,String> filling;
+	private HashMap<String,String> filling,research_meta_filling;
         private String research_name;
 	public HashMap<String, String> getFilling() {
 		return filling;
+	}
+
+	public HashMap<String, String> getResearch_meta_filling() {
+		return research_meta_filling;
+	}
+
+	public void setResearch_meta_filling(
+			HashMap<String, String> research_meta_filling) {
+		this.research_meta_filling = research_meta_filling;
 	}
 
 	public void setFilling(HashMap<String, String> filling) {
