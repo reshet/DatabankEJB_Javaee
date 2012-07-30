@@ -30,6 +30,7 @@ package org.opendatafoundation.data.mod;
  */
 
 
+import com.mplatforma.amr.service.AdminSocioResearchMDB;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +42,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1458,12 +1461,22 @@ public class SPSSFile
     private boolean isCp1251=false;
     public String readSPSSString(int length) throws IOException {
         String s = "";
-        byte[] buffer = new byte[length];
-        this.readBA(buffer);
-        if(isCp1251)s = new String(buffer,"cp1251");
-        else
+        try
         {
-            s = new String(buffer);
+            if(length>0)
+            {
+                byte[] buffer = new byte[length];
+                this.readBA(buffer);
+                if(isCp1251)s = new String(buffer,"cp1251");
+                else
+                {
+                    s = new String(buffer);
+                }
+            }
+        } catch (NegativeArraySizeException ex)
+        {
+                 Logger.getLogger(SPSSFile.class.getName()).log(Level.SEVERE, "Negaative arr size caught: "+ ex);
+                 return(s);
         }
         //String ss = new String(s.getBytes("cp1251"),"UTF-8");
         return(s);

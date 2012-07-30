@@ -52,7 +52,7 @@ public class Publication {
                 this.name = dto.getHeader();
 		this.setContents(dto.getContents());
 		this.setEnclosure_key(dto.getEnclosure_key());
-                this.setDate_publ(new Date());
+                this.setDate_publ(dto.getDate());
                 this.setSubheading(dto.getSubheading());
                 //this.setDate(dto.getDate());
 		//this.setAccept_date(dto.getAccept_date());
