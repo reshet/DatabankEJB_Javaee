@@ -9,10 +9,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import com.mplatforma.amr.service.remote.UserSocioResearchBeanRemote;
 import com.mplatrforma.amr.entity.*;
 import com.mresearch.databank.shared.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -794,6 +791,19 @@ public class UserSocioResearchSessionBean implements UserSocioResearchBeanRemote
     public MetaUnitMultivaluedEntityDTO getMetaUnitMultivaluedEntityDTO_FlattenedItems(long id) {
         MetaUnitMultivaluedEntity unit = em.find(MetaUnitMultivaluedEntity.class,id);
         return toMultivaluedEntityDTO(unit,true);
+    }
+
+    @Override
+    public ArrayList<VarDTO_Research> getVarsResearchNames(ArrayList<Long> keys) {
+       ArrayList<VarDTO_Research> map = new ArrayList<VarDTO_Research>();
+       for(Long k:keys)
+       {
+        Var v = em.find(Var.class, k);
+         v.setEM(em);
+         VarDTO_Detailed dto =  v.toDTO_Detailed(null,em);   
+         map.add(new VarDTO_Research(dto.getId(),dto.getResearch_id().intValue(), dto.getResearch_name()));
+       }
+        return map;
     }
 
     

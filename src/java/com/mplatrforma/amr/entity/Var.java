@@ -408,7 +408,7 @@ public class Var {
 			for(VarDTO_Light vardto:vars)
 			{
 				//in formula varcode is presented in [] - by protocol
-				if (filter.contains(vardto.getCode()))
+				if (filter.contains(vardto.getCode()+" "))
 				{
 					var_codes.add(vardto.getCode());
 					if (!vardto.getCode().equals(this.code))vars_to_use.add(vardto);
@@ -501,7 +501,8 @@ public class Var {
 			filtered = cortage;
 		}
 	
-		
+		  ArrayList<Integer> match = new ArrayList<Integer>();
+			
 		//with weights
 		if(weight_var_id != 0 && watching_user.getWeights_use()==1)
 		{
@@ -537,17 +538,21 @@ public class Var {
 			}
 		}else
 		{
-			for(Double value:filtered)
+                        int kkk = 0;
+                      for(Double value:filtered)
 			{
-				if (!value.equals(Double.NaN))
+                            	if (!value.equals(Double.NaN))
 				{
+                                        double d = Math.round(value);
 					int setIndex = v_label_codes.indexOf(value);
 					if (setIndex >=0)
 					{
 						Double val = distr.get(setIndex);
 						distr.set(setIndex, val+1);
+                                                match.add(kkk);
 					}
 				}
+                                kkk++;
 			}
 		}	
 		

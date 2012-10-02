@@ -5,6 +5,7 @@ import javax.ejb.Remote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Remote
@@ -12,6 +13,7 @@ public interface UserSocioResearchBeanRemote {
     SocioResearchDTO getResearch(long id);
     VarDTO getVar(long id,UserAccountDTO dto);
     VarDTO_Detailed getVarDetailed(long id,UserAccountDTO dto);
+    ArrayList<VarDTO_Research> getVarsResearchNames(ArrayList<Long> keys);
     ArrayList<SocioResearchDTO_Light> getResearchSummaries();
     ArrayList<SocioResearchDTO_Light> getResearchSummaries(List<FilterBaseDTO> filters);
     ArrayList<SocioResearchDTO_Light> getResearchDTOs(ArrayList<Long> ids); 
