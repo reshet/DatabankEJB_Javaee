@@ -5,6 +5,7 @@
 package com.mplatforma.amr.service;
 
 import com.mplatforma.amr.service.remote.AdminPubBeanRemote;
+import com.mplatforma.amr.service.remote.AdminSocioResearchBeanRemote;
 import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
 import com.mplatrforma.amr.entity.*;
 import com.mresearch.databank.shared.PublicationDTO_Light;
@@ -33,12 +34,14 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
     private EntityManager em;
     
     @EJB AdminPubBeanRemote pubbean;
+     @EJB AdminSocioResearchBeanRemote research_bean;
    
     public static String PUBLICATION_TOPIC="topic";
     public static String CONSULTATION_TOPIC="topic";
     @Override
     public UserAccountDTO getUserAccount(String email, String password) {
-       //initDefaults();
+        
+       // initDefaults();
        //createDefaultDatabankStructure();
        //return new UserAccountDTO(email,email, password);
        //createDefaultDatabankVarStructure();
@@ -47,9 +50,23 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
        // initDefaults();
        // createDefaultStartPage();
        // script();
+        
+        
+       //research_bean.reIndexAllResearches(em);
        return UserAccount.toDTO(new UserAccount(em).getUserAccount(email, password));
     } 
     
+    
+    @Override
+    public void initDefaults() {
+       // new UserAccount(em).createDefaults();
+        createDefaultDatabankStructure();
+        createDefaultDatabankVarStructure();
+        createDefaultDatabankLawStructure();
+        createDefaultDatabankPubStructure();
+        createDefaultDatabankJuryStructure();
+        createDefaultStartPage();
+    }
      private void createDefaultDatabankStructure()
       {
           //DatabankStructure<SocioResearch> db = new DatabankStructure<SocioResearch>("socioresearch");
@@ -333,15 +350,7 @@ public class UserAccountSessionBean implements UserAccountBeanRemote{
         return returnBack;
     }
 
-    @Override
-    public void initDefaults() {
-        //new UserAccount(em).createDefaults();
-        //createDefaultDatabankStructure();
-       // createDefaultDatabankVarStructure();
-        //createDefaultDatabankLawStructure();
-       // createDefaultDatabankPubStructure();
-     //   createDefaultDatabankJuryStructure();
-    }
+    
 
     @Override
     public UserAccountDTO getDefaultUser() {

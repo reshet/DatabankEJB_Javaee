@@ -7,6 +7,7 @@ package com.mplatforma.amr.service;
 import com.mplatforma.amr.service.remote.AdminSocioResearchBeanRemote;
 import com.mplatforma.amr.service.remote.RxStorageBeanRemote;
 import com.mplatforma.amr.service.remote.UserAccountBeanRemote;
+import com.mplatforma.amr.service.remote.UserSocioResearchBeanRemote;
 
 import com.mplatrforma.amr.entity.*;
 import com.mresearch.databank.jobs.*;
@@ -76,6 +77,9 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
     
     @EJB
     private RxStorageBeanRemote store;
+    @EJB
+    private UserSocioResearchBeanRemote socio_bean;
+    
    
     public UserAccountDTO updateAccountResearchState(UserAccountDTO dto) {
         UserAccount account;
@@ -255,7 +259,21 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
             ex.printStackTrace();
         }
     }
-     
+      private void launchIndexingVarsBulked(ArrayList<Long> ids)
+    {
+         try {
+            ObjectMessage message = session.createObjectMessage();
+            message.setStringProperty("title", "command to index SocioResearch var");
+            // here we create NewsEntity, that will be sent in JMS message
+           // ParseSpssJob job = new ParseSpssJob(blobkey, length);
+            IndexVarsBulkJob job = new IndexVarsBulkJob(ids);
+            message.setObject(job);    
+           // message.setJMSDestination(queue);
+            q_sender.send(message);
+        } catch (JMSException ex) {
+            ex.printStackTrace();
+        }
+    }
    
     
     private void launchIndexing(SocioResearchDTO dto)
@@ -697,6 +715,30 @@ public class AdminSocioResearchSessionBean implements AdminSocioResearchBeanRemo
         DatabankStartPage d = DatabankStartPage.getStartPageSingleton(em);
         d.updateFromDTO(em, dto);
         em.persist(d);
+    }
+
+    @Override
+    public void reIndexAllResearches(EntityManager emm) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        //List<SocioResearchDTO_Light> list = socio_bean.getResearchSummaries();
+        if(em.isOpen())
+        {
+            List<SocioResearchDTO_Light> list = SocioResearch.getResearchsLight(emm);
+            for(SocioResearchDTO_Light dto_l:list)
+            {
+                ArrayList<Long> arr = new ArrayList<Long>();
+                arr.add(dto_l.getID());
+                launchDeleteIndexing(arr, "research");
+                SocioResearchDTO dto = new SocioResearchDTO();
+                dto.setId(dto_l.getId());
+                launchIndexing(dto);
+                ArrayList<Long> ids = Var.getResearchVarsIDs(emm, dto_l.getID());
+                launchDeleteIndexing(ids,"sociovar");
+                launchIndexingVarsBulked(ids);
+                break;
+            }
+        }
+        
     }
     
     

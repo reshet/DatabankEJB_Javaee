@@ -5,6 +5,7 @@ import javax.ejb.Remote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.persistence.EntityManager;
 
 @Remote
 public interface AdminSocioResearchBeanRemote {
@@ -35,4 +36,5 @@ public interface AdminSocioResearchBeanRemote {
       void updateMetaUnitEntityItemLinks(Long item_id,ArrayList<Long> tagged_ids,String identifier);
       
       void setStartupContent(StartupBundleDTO dto);
+      void reIndexAllResearches(EntityManager em);
 }

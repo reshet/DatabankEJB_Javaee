@@ -1459,6 +1459,8 @@ public class SPSSFile
      * @return the String value read from the file
      */
     private boolean isCp1251=false;
+    private boolean isKOI8_R=false;
+    
     public String readSPSSString(int length) throws IOException {
         String s = "";
         try
@@ -1468,11 +1470,14 @@ public class SPSSFile
                 byte[] buffer = new byte[length];
                 this.readBA(buffer);
                 if(isCp1251)s = new String(buffer,"cp1251");
+                //else if(isKOI8_R)s = new String(buffer,"KOI8-R");
                 else
                 {
                     s = new String(buffer);
                 }
             }
+            Logger.getLogger(SPSSFile.class.getName()).log(Level.INFO, "String read: {0}", s);
+
         } catch (NegativeArraySizeException ex)
         {
                  Logger.getLogger(SPSSFile.class.getName()).log(Level.SEVERE, "Negaative arr size caught: "+ ex);
@@ -1543,4 +1548,18 @@ static String decodeCp1251(byte[] data)
   '\u0440', '\u0441', '\u0442', '\u0443', '\u0444', '\u0445', '\u0446', '\u0447',
   '\u0448', '\u0449', '\u044A', '\u044B', '\u044C', '\u044D', '\u044E', '\u044F'
 };
+
+    /**
+     * @return the isKOI8_R
+     */
+    public boolean isIsKOI8_R() {
+        return isKOI8_R;
+    }
+
+    /**
+     * @param isKOI8_R the isKOI8_R to set
+     */
+    public void setIsKOI8_R(boolean isKOI8_R) {
+        this.isKOI8_R = isKOI8_R;
+    }
 }

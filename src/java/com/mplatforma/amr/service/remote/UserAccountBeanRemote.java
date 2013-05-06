@@ -14,4 +14,5 @@ public interface UserAccountBeanRemote {
     void initDefaults();
     StartupBundleDTO getStartupContent();
     
+    
 }

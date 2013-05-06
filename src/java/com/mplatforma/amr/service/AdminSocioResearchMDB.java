@@ -92,6 +92,17 @@ public class AdminSocioResearchMDB implements MessageListener {
                     IndexVarJob job = (IndexVarJob)obj;
                     VarDTO dto = U_bean.getVar(job.getId_Var(),null);
                     perform_indexing_var(dto);         
+                } else if (obj instanceof IndexVarsBulkJob)
+                {
+                    IndexVarsBulkJob job = (IndexVarsBulkJob)obj;
+                  //  VarDTO dto = U_bean.getVar(job.getId_Var(),null);
+                    vars_waiting_indexing = new ArrayList<VarDTO>(job.getIds().size());
+                    for(Long id:job.getIds())
+                    {
+                        VarDTO dto = U_bean.getVar(id,null);    
+                        launchIndexingVarBULKED(dto);
+                    }
+                    perform_var_bulk_indexing();  
                 }
                 else if (obj instanceof IndexVarJobFast)
                 {
@@ -620,10 +631,14 @@ public class AdminSocioResearchMDB implements MessageListener {
         // (4)
         String encoding = detector.getDetectedCharset();
         boolean isCP1251 = false;
+        boolean isKOI8_R = false;
+        
         if (encoding != null) {
           System.out.println("Detected encoding = " + encoding);
           if(encoding.equals("WINDOWS-1251"))
               isCP1251 = true;
+           if(encoding.equals("KOI8-R"))
+              isKOI8_R = true;
         } else {
           System.out.println("No encoding detected.");
         }
@@ -645,6 +660,7 @@ public class AdminSocioResearchMDB implements MessageListener {
 //            //s.
             try {
                     s.setIsCP1251(isCP1251);
+                    s.setIsKOI8_R(isKOI8_R);
                     s.loadMetadata();
             //        ans+=" meta_loaded";
                     s.setIsCP1251(false);
